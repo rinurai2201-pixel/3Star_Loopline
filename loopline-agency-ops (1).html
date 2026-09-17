@@ -1,0 +1,2225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loopline — Agency Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#F4F2ED;
+    --surface:#FFFFFF;
+    --ink:#191D26;
+    --ink-soft:#5B6270;
+    --navy:#161C2B;
+    --navy-soft:#232A3D;
+    --accent:#D99A45;
+    --accent-ink:#5A3B0E;
+    --teal:#3E6E68;
+    --teal-soft:#E4EEEC;
+    --danger:#BE4B36;
+    --danger-soft:#FBE7E2;
+    --line:#E4E0D6;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(22,28,43,0.06), 0 8px 24px -12px rgba(22,28,43,0.12);
+    font-family:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);}
+  h1,h2,h3,h4{font-family:'Space Grotesk',system-ui,sans-serif;margin:0;letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;}
+
+  /* ---------- LOGIN ---------- */
+  #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .login-card{background:var(--surface);border-radius:16px;box-shadow:var(--shadow);max-width:480px;width:100%;padding:36px;border:1px solid var(--line);}
+  .brand-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .brand-mark{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--navy),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Space Grotesk';font-weight:700;font-size:16px;}
+  .login-card h1{font-size:22px;}
+  .login-sub{color:var(--ink-soft);font-size:13.5px;margin-top:4px;margin-bottom:26px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;}
+  .field input,.field select,.field textarea{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:#FCFBF8;font-size:14.5px;color:var(--ink);}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);}
+  .btn{border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600;transition:transform .08s ease, opacity .15s ease;}
+  .btn:active{transform:scale(.98);}
+  .btn-primary{background:var(--navy);color:#fff;}
+  .btn-primary:hover{opacity:.9;}
+  .btn-accent{background:var(--accent);color:var(--accent-ink);}
+  .btn-accent:hover{opacity:.88;}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink);}
+  .btn-ghost:hover{background:#F0EEE7;}
+  .btn-danger{background:var(--danger-soft);color:var(--danger);}
+  .btn-block{width:100%;}
+  .existing-users{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+  .user-chip{border:1px solid var(--line);background:#FCFBF8;border-radius:20px;padding:6px 12px;font-size:13px;display:flex;align-items:center;gap:6px;}
+  .user-chip:hover{border-color:var(--accent);}
+  .role-pill{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--teal-soft);color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:.03em;}
+  .divider-text{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;margin:18px 0;}
+  .divider-text::before,.divider-text::after{content:'';flex:1;height:1px;background:var(--line);}
+
+  /* ---------- APP SHELL ---------- */
+  #app{display:none;min-height:100vh;grid-template-columns:230px 1fr;}
+  #app.active{display:grid;}
+  aside{background:var(--navy);color:#EDEEF2;padding:22px 16px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  .side-brand{display:flex;align-items:center;gap:10px;padding:0 8px 20px 8px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:14px;}
+  .side-brand h1{font-size:17px;color:#fff;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#B7BCC9;font-size:13.5px;font-weight:500;background:transparent;border:none;text-align:left;width:100%;}
+  .nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+  .nav-item.active{background:var(--accent);color:var(--accent-ink);font-weight:700;}
+  .nav-lock{margin-left:auto;font-size:10px;opacity:.7;}
+  .side-foot{margin-top:auto;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);}
+  .who{display:flex;align-items:center;gap:10px;padding:8px;}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+  .who-name{font-size:13px;font-weight:600;color:#fff;}
+  .who-role{font-size:11px;color:#9AA0AF;}
+  .switch-user{width:100%;margin-top:8px;padding:8px;font-size:12px;background:rgba(255,255,255,.06);color:#D8DAE2;border:none;border-radius:8px;}
+  .switch-user:hover{background:rgba(255,255,255,.12);}
+
+  main{padding:28px 34px 60px;max-width:1180px;}
+  .page{display:none;}
+  .page.active{display:block;animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+  .page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px;flex-wrap:wrap;gap:12px;}
+  .page-head h2{font-size:24px;}
+  .page-head p{color:var(--ink-soft);font-size:13.5px;margin-top:4px;}
+  .eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:4px;}
+
+  .grid{display:grid;gap:16px;}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-2{grid-template-columns:1.3fr 1fr;}
+  @media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr);}.grid-2,.grid-3{grid-template-columns:1fr;}}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+  .stat-card .stat-label{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
+  .stat-card .stat-value{font-family:'Space Grotesk';font-size:26px;font-weight:700;margin-top:6px;}
+  .stat-card .stat-sub{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+
+  .section-title{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);padding:8px 10px;border-bottom:1px solid var(--line);font-weight:700;}
+  td{padding:9px 10px;border-bottom:1px solid #F0EEE7;vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  .empty-row td{color:var(--ink-soft);text-align:center;padding:24px;font-style:italic;}
+
+  .badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;display:inline-block;}
+  .badge-pending{background:#FCEFD9;color:#8A5A11;}
+  .badge-progress{background:#DDEAF7;color:#1E5A8A;}
+  .badge-done{background:var(--teal-soft);color:var(--teal);}
+  .badge-approved{background:var(--teal-soft);color:var(--teal);}
+  .badge-rejected{background:var(--danger-soft);color:var(--danger);}
+  .badge-holding{background:#F1E4F7;color:#7A3D96;}
+
+  .inline-form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px;}
+  .inline-form .field{margin-bottom:0;min-width:140px;flex:1;}
+
+  .lock-screen{max-width:420px;margin:60px auto;text-align:center;}
+  .lock-icon{width:52px;height:52px;border-radius:50%;background:var(--navy-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 16px;}
+
+  .grid-msg{display:grid;grid-template-columns:260px 1fr;gap:16px;align-items:start;}
+  @media(max-width:900px){.grid-msg{grid-template-columns:1fr;}}
+  .contact-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+  .contact-item{padding:11px 16px;border-bottom:1px solid #F0EEE7;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:13.5px;}
+  .contact-item:last-child{border-bottom:none;}
+  .contact-item:hover{background:#F7F5F0;}
+  .contact-item.active{background:var(--teal-soft);}
+  .chat-wrap{display:flex;flex-direction:column;height:65vh;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+  .chat-messages{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:12px;}
+  .msg{max-width:65%;padding:9px 13px;border-radius:12px;background:#F0EEE7;font-size:13.5px;line-height:1.45;}
+  .msg.me{align-self:flex-end;background:var(--navy);color:#fff;}
+  .msg .meta{font-size:10.5px;opacity:.65;margin-bottom:3px;font-weight:600;}
+  .chat-input-row{display:flex;gap:10px;padding:14px;border-top:1px solid var(--line);background:#FCFBF8;}
+  .chat-input-row input{flex:1;}
+
+  .tag{display:inline-block;font-size:11px;background:#F0EEE7;padding:2px 8px;border-radius:6px;color:var(--ink-soft);margin-right:4px;}
+  .subtle-btn{background:none;border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:12px;color:var(--ink-soft);}
+  .subtle-btn:hover{border-color:var(--accent);color:var(--accent-ink);}
+  .clock-status{display:flex;align-items:center;gap:10px;}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--ink-soft);}
+  .dot.live{background:var(--teal);box-shadow:0 0 0 4px var(--teal-soft);}
+  .task-note{font-size:12px;color:var(--ink-soft);background:#F7F5F0;padding:6px 9px;border-radius:6px;margin-top:4px;}
+  .month-select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#FCFBF8;font-size:13px;}
+  .footer-note{font-size:11.5px;color:var(--ink-soft);margin-top:26px;padding-top:14px;border-top:1px solid var(--line);}
+
+  /* ---------- STATUS BOARD ---------- */
+  .status-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
+  .status-tile{border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:linear-gradient(180deg,#FFFFFF,#FCFBF8);position:relative;overflow:hidden;transition:transform .12s ease, box-shadow .12s ease;}
+  .status-tile:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+  .status-tile-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .status-tile .avatar{width:34px;height:34px;font-size:13px;}
+  .status-tile-name{font-size:13.5px;font-weight:700;color:var(--ink);}
+  .status-tile-role{font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
+  .status-pulse{width:8px;height:8px;border-radius:50%;position:absolute;top:14px;right:14px;}
+  .status-pulse.working{background:var(--teal);box-shadow:0 0 0 4px var(--teal-soft);}
+  .status-pulse.break{background:var(--accent);box-shadow:0 0 0 4px #FBE8CE;}
+  .status-pulse.out{background:var(--ink-soft);box-shadow:0 0 0 4px #E9E7DF;}
+  .status-pulse.leave{background:#7A3D96;box-shadow:0 0 0 4px #F1E4F7;}
+  .status-pulse.notin{background:var(--danger);box-shadow:0 0 0 4px var(--danger-soft);}
+  .status-label{font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:20px;display:inline-block;margin-bottom:8px;}
+  .status-label.working{background:var(--teal-soft);color:var(--teal);}
+  .status-label.break{background:#FCEFD9;color:#8A5A11;}
+  .status-label.out{background:#F0EEE7;color:var(--ink-soft);}
+  .status-label.leave{background:#F1E4F7;color:#7A3D96;}
+  .status-label.notin{background:var(--danger-soft);color:var(--danger);}
+  .status-times{font-size:12px;color:var(--ink-soft);line-height:1.6;}
+  .status-times b{color:var(--ink);font-weight:600;}
+  .status-tile{border-top:3px solid var(--line);}
+  .status-tile-working{border-top-color:var(--teal);}
+  .status-tile-break{border-top-color:var(--accent);}
+  .status-tile-out{border-top-color:var(--ink-soft);}
+  .status-tile-leave{border-top-color:#7A3D96;}
+  .status-tile-notin{border-top-color:var(--danger);}
+
+  /* ---------- ATTENDANCE HERO ---------- */
+  .att-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-soft) 55%,var(--teal) 130%);color:#fff;border-radius:16px;padding:22px 26px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+  .att-hero::after{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(217,154,69,.25),transparent 70%);}
+  .att-hero-main{display:flex;align-items:center;gap:16px;position:relative;z-index:1;}
+  .att-hero-clockicon{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .att-hero-clockicon .dot{width:15px;height:15px;background:#9AA0AF;border-radius:50%;}
+  .att-hero-clockicon .dot.live{background:#4ADE80;box-shadow:0 0 0 6px rgba(74,222,128,.25);animation:attpulse 1.6s infinite;}
+  @keyframes attpulse{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55);}70%{box-shadow:0 0 0 12px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
+  .att-hero-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;opacity:.72;font-weight:600;}
+  .att-hero-status{font-family:'Space Grotesk';font-size:20px;font-weight:700;margin-top:3px;}
+  .att-hero-sub{font-size:12.5px;opacity:.82;margin-top:4px;}
+  .att-hero-actions{display:flex;gap:10px;position:relative;z-index:1;}
+  .att-hero-actions .btn{min-width:126px;}
+  .att-hero-actions .btn-ghost{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;}
+  .att-hero-actions .btn-ghost:hover{background:rgba(255,255,255,.18);}
+  .att-hero-actions .btn:disabled{opacity:.45;cursor:default;}
+
+  .week-strip{display:flex;gap:8px;margin-top:12px;}
+  .week-day{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 4px;text-align:center;transition:transform .1s ease;}
+  .week-day:hover{transform:translateY(-1px);}
+  .week-day.today{border-color:var(--accent);box-shadow:0 0 0 2px rgba(217,154,69,.15);}
+  .week-day .wd-label{font-size:10px;color:var(--ink-soft);text-transform:uppercase;font-weight:700;letter-spacing:.03em;}
+  .week-day .wd-dot{width:10px;height:10px;border-radius:50%;margin:7px auto 5px;}
+  .week-day .wd-date{font-size:10.5px;color:var(--ink-soft);}
+  .wd-dot.present{background:var(--teal);}
+  .wd-dot.leave{background:#7A3D96;}
+  .wd-dot.absent{background:var(--danger);}
+  .wd-dot.weekend{background:var(--line);}
+  .wd-dot.future{background:var(--line);opacity:.45;}
+
+  /* ---------- LEAVE CARD ---------- */
+  .leave-tabs{display:flex;gap:6px;margin-bottom:14px;}
+  .leave-tab{background:#F0EEE7;border:none;padding:7px 16px;border-radius:20px;font-size:12.5px;font-weight:600;color:var(--ink-soft);}
+  .leave-tab:hover{background:#E7E4DA;}
+  .leave-tab.active{background:var(--navy);color:#fff;}
+  .leave-balance{margin-bottom:16px;}
+  .leave-balance-bar{height:8px;background:#F0EEE7;border-radius:20px;overflow:hidden;}
+  .leave-balance-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--accent));border-radius:20px;transition:width .3s ease;}
+  .leave-balance-text{font-size:11.5px;color:var(--ink-soft);margin-top:6px;font-weight:600;}
+  .leave-timeline-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #F0EEE7;align-items:flex-start;}
+  .leave-timeline-item:last-child{border-bottom:none;}
+  .leave-timeline-bar{width:4px;align-self:stretch;border-radius:4px;flex-shrink:0;}
+  .leave-timeline-bar.Pending{background:var(--accent);}
+  .leave-timeline-bar.Approved{background:var(--teal);}
+  .leave-timeline-bar.Rejected{background:var(--danger);}
+  .leave-timeline-dates{font-size:13.5px;font-weight:600;}
+  .leave-timeline-reason{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+
+  /* ---------- STAT CARDS v2 (stylish) ---------- */
+  .stat-card{position:relative;overflow:hidden;border-top:3px solid var(--line);}
+  .stat-card.acc-navy{border-top-color:var(--navy);}
+  .stat-card.acc-teal{border-top-color:var(--teal);}
+  .stat-card.acc-accent{border-top-color:var(--accent);}
+  .stat-card.acc-purple{border-top-color:#7A3D96;}
+  .stat-card::after{content:'';position:absolute;top:-30px;right:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(217,154,69,.10),transparent 70%);pointer-events:none;}
+
+  /* ---------- BREAK BUTTON ROW ---------- */
+  .break-btn-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .break-btn{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.10);color:#fff;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;transition:background .15s ease, transform .08s ease;}
+  .break-btn:hover:not(:disabled){background:rgba(255,255,255,.2);}
+  .break-btn:active:not(:disabled){transform:scale(.97);}
+  .break-btn:disabled{opacity:.35;cursor:default;}
+  .break-btn.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+  .break-btn .bicon{font-size:14px;}
+  .break-chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:#F0EEE7;color:var(--ink-soft);margin-right:6px;margin-top:4px;}
+  .break-chip.tea{background:#F1E6D3;color:#8A5A11;}
+  .break-chip.food{background:#E4EEEC;color:var(--teal);}
+
+  /* ---------- ALERT BANNERS ---------- */
+  .alert-banner{display:flex;align-items:flex-start;gap:12px;padding:14px 18px;border-radius:12px;margin-bottom:16px;box-shadow:var(--shadow);border:1px solid transparent;}
+  .alert-banner .alert-icon{font-size:20px;line-height:1;flex-shrink:0;}
+  .alert-banner .alert-title{font-weight:700;font-size:13.5px;margin-bottom:2px;}
+  .alert-banner .alert-body{font-size:12.5px;color:var(--ink-soft);line-height:1.5;}
+  .alert-banner.warn{background:#FCEFD9;border-color:#F0D9A8;}
+  .alert-banner.warn .alert-title{color:#8A5A11;}
+  .alert-banner.info{background:var(--teal-soft);border-color:#C6DFDA;}
+  .alert-banner.info .alert-title{color:var(--teal);}
+  .alert-banner.danger{background:var(--danger-soft);border-color:#F3C7BB;}
+  .alert-banner.danger .alert-title{color:var(--danger);}
+  .alert-list{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:3px;}
+  .alert-list li{font-size:12.5px;color:var(--ink);}
+  .alert-list b{font-weight:700;}
+
+  /* ---------- ACTIVITY LOG (HR) ---------- */
+  .activity-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+  .activity-toolbar input[type=date]{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#FCFBF8;font-size:13px;}
+  .act-cell-time{font-family:'JetBrains Mono',monospace;font-size:12.5px;}
+  .act-break-pair{display:inline-flex;flex-wrap:wrap;gap:4px;}
+
+  /* ---------- LEAVE DASHBOARD v2 ---------- */
+  .leave-card{background:linear-gradient(180deg,#FFFFFF,#FCFBF8);}
+  .leave-balance-ring-wrap{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+  .leave-balance-ring{flex-shrink:0;}
+  .leave-balance-ring-label{font-size:12px;color:var(--ink-soft);}
+  .leave-balance-ring-label b{display:block;font-family:'Space Grotesk';font-size:18px;color:var(--ink);font-weight:700;}
+
+  /* ---------- PAYSLIP BUTTON ---------- */
+  .payslip-btn{margin-top:10px;width:100%;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:9px 12px;font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .payslip-btn:hover{opacity:.9;}
+
+  /* ---------- CHAT IMAGE UPLOAD ---------- */
+  .chat-attach-btn{background:#F0EEE7;border:1px solid var(--line);border-radius:8px;width:40px;flex-shrink:0;font-size:16px;display:flex;align-items:center;justify-content:center;}
+  .chat-attach-btn:hover{border-color:var(--accent);}
+  .chat-img-preview{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#F7F5F0;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);}
+  .chat-img-preview img{height:40px;border-radius:6px;object-fit:cover;}
+  .chat-img-preview button{background:var(--danger-soft);color:var(--danger);border:none;border-radius:6px;padding:3px 8px;font-size:11px;}
+  .msg img{max-width:220px;border-radius:8px;display:block;margin-top:5px;cursor:pointer;}
+
+  /* ---------- FREELANCER PORTFOLIO ---------- */
+  .portfolio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+  .portfolio-item{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);}
+  .portfolio-item img{width:100%;height:120px;object-fit:cover;display:block;background:#F0EEE7;}
+  .portfolio-item-body{padding:10px 12px;}
+  .portfolio-item-title{font-size:13px;font-weight:700;}
+  .portfolio-item-desc{font-size:11.5px;color:var(--ink-soft);margin-top:3px;line-height:1.4;}
+  .portfolio-item-del{margin-top:8px;}
+  .upload-drop{border:1.5px dashed var(--line);border-radius:10px;padding:16px;text-align:center;background:#FCFBF8;font-size:12.5px;color:var(--ink-soft);cursor:pointer;}
+  .upload-drop:hover{border-color:var(--accent);color:var(--accent-ink);}
+  .upload-drop.has-file{border-color:var(--teal);color:var(--teal);background:var(--teal-soft);}
+
+  /* ---------- FREELANCE SUBMISSION / APPROVAL ---------- */
+  .badge-submitted{background:#DDEAF7;color:#1E5A8A;}
+  .submission-box{background:#F7F5F0;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;}
+  .submission-box img{max-width:140px;border-radius:6px;display:block;margin-top:6px;}
+
+  /* ---------- CLIENT ACCOUNTS VAULT (TL only) ---------- */
+  .vault-card{border-top:3px solid #7A3D96;}
+  .vault-lock-note{font-size:11.5px;color:#7A3D96;background:#F1E4F7;padding:6px 10px;border-radius:8px;display:inline-block;margin-bottom:12px;font-weight:600;}
+  .pass-cell{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+  .pass-toggle{background:none;border:none;font-size:13px;cursor:pointer;color:var(--ink-soft);padding:0 2px;}
+  .acct-row-block{font-size:12px;line-height:1.6;}
+  .acct-row-block b{color:var(--ink-soft);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="brand-row"><div class="brand-mark">L</div><h1>Loopline</h1></div>
+    <div class="login-sub">Clock-ins, tasks, leave, payroll and client revenue — one board for the whole agency.</div>
+
+    <div id="existing-users-wrap">
+      <label style="display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em;">Continue as</label>
+      <div class="existing-users" id="existing-users"></div>
+    </div>
+
+    <div class="divider-text">or add a team member</div>
+
+    <div class="field">
+      <label>Full name</label>
+      <input id="new-name" type="text" placeholder="e.g. Priya Raman">
+    </div>
+    <div class="field">
+      <label>Role</label>
+      <select id="new-role">
+        <option value="Employee">Employee</option>
+        <option value="Manager">Manager</option>
+        <option value="Sales">Sales Team</option>
+        <option value="TL">Team Lead</option>
+        <option value="HR">HR / Admin</option>
+        <option value="CEO">CEO</option>
+        <option value="Freelancer">Freelancer</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Department (optional)</label>
+      <input id="new-dept" type="text" placeholder="e.g. SEO, AEO, Content">
+    </div>
+    <div class="field">
+      <label>Birthday</label>
+      <input id="new-birthday" type="date">
+    </div>
+    <div class="field">
+      <label>Role access code</label>
+      <input id="new-role-code" type="password" placeholder="Code for the role selected above">
+      <div style="font-size:11.5px;color:var(--ink-soft);margin-top:5px;">Ask your admin for your role's code — it's different for Employee, TL, HR and CEO.</div>
+    </div>
+    <div id="new-role-error" style="color:var(--danger);font-size:12.5px;margin-bottom:10px;"></div>
+    <button class="btn btn-primary btn-block" onclick="createAndLogin()">Add & continue</button>
+  </div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="app">
+  <aside>
+    <div class="side-brand"><div class="brand-mark">L</div><h1>Loopline</h1></div>
+
+    <button class="nav-item" data-page="dashboard" onclick="showPage('dashboard')">🕒 My Dashboard</button>
+    <button class="nav-item" data-page="chat" onclick="showPage('chat')">💬 Messages</button>
+    <button class="nav-item" data-page="hr" onclick="showPage('hr')">🧾 HR Management</button>
+    <button class="nav-item" data-page="tl" onclick="showPage('tl')">📋 TL — Task Management <span class="nav-lock">🔒</span></button>
+    <button class="nav-item" data-page="revenue" onclick="showPage('revenue')">💰 Revenue & Profit <span class="nav-lock">🔒</span></button>
+    <button class="nav-item" data-page="reports" onclick="showPage('reports')">📊 Reports & Scale</button>
+    <button class="nav-item" data-page="freelance" onclick="showPage('freelance')">🧑‍💻 Freelance Hub</button>
+
+    <div class="side-foot">
+      <div class="who">
+        <div class="avatar" id="side-avatar">?</div>
+        <div>
+          <div class="who-name" id="side-name">—</div>
+          <div class="who-role" id="side-role">—</div>
+        </div>
+      </div>
+      <button class="switch-user" onclick="logout()">Switch user</button>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <section class="page" id="page-dashboard">
+      <div class="page-head">
+        <div><div class="eyebrow">Self-service</div><h2 id="dash-hello">Dashboard</h2><p>Clock in, manage your tasks, apply for leave, and check your pay.</p></div>
+      </div>
+
+      <div id="birthday-banner" style="display:none;background:var(--accent);color:var(--accent-ink);padding:12px 16px;border-radius:10px;font-weight:700;margin-bottom:16px;"></div>
+
+      <div class="att-hero">
+        <div class="att-hero-main">
+          <div class="att-hero-clockicon"><span class="dot" id="clock-dot"></span></div>
+          <div>
+            <div class="att-hero-label">Attendance today</div>
+            <div class="att-hero-status" id="clock-status-text">Not clocked in</div>
+            <div class="att-hero-sub" id="break-sub">No breaks yet today</div>
+          </div>
+        </div>
+        <div class="att-hero-actions">
+          <button class="btn btn-accent" id="clock-btn" onclick="toggleClock()">Clock In</button>
+          <div class="break-btn-row">
+            <button class="break-btn" id="tea-break-btn" onclick="toggleBreak('Tea')" disabled><span class="bicon">🍵</span> Tea Break</button>
+            <button class="break-btn" id="food-break-btn" onclick="toggleBreak('Food')" disabled><span class="bicon">🍱</span> Food Break</button>
+          </div>
+        </div>
+      </div>
+      <div class="week-strip" id="week-strip"></div>
+
+      <div class="grid grid-3" style="margin:20px 0;">
+        <div class="card stat-card acc-navy">
+          <div class="stat-label">This month's salary</div>
+          <div class="stat-value" id="my-salary">₹0</div>
+          <div class="stat-sub">Set by HR</div>
+          <button class="payslip-btn" onclick="downloadPayslip(currentUser.id)">⬇ Download payslip (PDF)</button>
+        </div>
+        <div class="card stat-card acc-accent">
+          <div class="stat-label">Incentive earned</div>
+          <div class="stat-value" id="my-incentive">₹0</div>
+          <div class="stat-sub" id="my-incentive-sub">No incentives yet</div>
+        </div>
+        <div class="card stat-card acc-teal">
+          <div class="stat-label">Performance score</div>
+          <div class="stat-value" id="my-score">—</div>
+          <div class="stat-sub">Out of 100</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="section-title">My tasks</div>
+          <table>
+            <thead><tr><th>Task</th><th>Deadline</th><th>Status</th><th>Update</th></tr></thead>
+            <tbody id="my-tasks-body"></tbody>
+          </table>
+        </div>
+        <div class="card leave-card">
+          <div class="section-title">Leave</div>
+          <div class="leave-tabs">
+            <button class="leave-tab active" id="leave-tab-btn-apply" onclick="switchLeaveTab('apply')">Apply</button>
+            <button class="leave-tab" id="leave-tab-btn-history" onclick="switchLeaveTab('history')">History</button>
+          </div>
+          <div class="leave-balance-ring-wrap">
+            <svg class="leave-balance-ring" width="60" height="60" viewBox="0 0 60 60">
+              <circle cx="30" cy="30" r="25" fill="none" stroke="#F0EEE7" stroke-width="7"></circle>
+              <circle id="leave-ring-fg" cx="30" cy="30" r="25" fill="none" stroke="url(#leaveGrad)" stroke-width="7" stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="157" transform="rotate(-90 30 30)"></circle>
+              <defs><linearGradient id="leaveGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3E6E68"/><stop offset="100%" stop-color="#D99A45"/></linearGradient></defs>
+            </svg>
+            <div class="leave-balance-ring-label"><b id="leave-ring-text">0</b>days used this year</div>
+          </div>
+          <div class="leave-balance">
+            <div class="leave-balance-bar"><div class="leave-balance-fill" id="leave-balance-fill" style="width:0%;"></div></div>
+            <div class="leave-balance-text" id="leave-balance-text">0 / 12 leave days used this year</div>
+          </div>
+          <div id="leave-tab-apply">
+            <div class="field"><label>From</label><input type="date" id="leave-from"></div>
+            <div class="field"><label>To</label><input type="date" id="leave-to"></div>
+            <div class="field"><label>Reason</label><textarea id="leave-reason" rows="2" placeholder="Brief reason"></textarea></div>
+            <button class="btn btn-primary btn-block" onclick="applyLeave()">Submit request</button>
+          </div>
+          <div id="leave-tab-history" style="display:none;">
+            <div id="my-leaves-body"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-2" style="margin-top:16px;">
+        <div class="card">
+          <div class="section-title">🎂 Team birthdays this month</div>
+          <div id="dash-birthdays"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">Suggestion / complaint box <span style="font-size:11px;color:var(--ink-soft);font-weight:500;">goes straight to HR & CEO</span></div>
+          <textarea id="complaint-input" rows="2" placeholder="Raise a suggestion or complaint..."></textarea>
+          <button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="submitComplaint()">Send</button>
+          <div id="my-complaints" style="margin-top:12px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- CHAT ---------- -->
+    <section class="page" id="page-chat">
+      <div class="page-head"><div><div class="eyebrow">Messages</div><h2>Direct Messages</h2><p>HR ↔ Employee and TL ↔ Employee conversations, kept one-to-one.</p></div></div>
+      <div class="grid-msg">
+        <div class="contact-panel">
+          <div class="section-title" style="padding:14px 16px 8px;margin-bottom:0;">Contacts</div>
+          <div id="contact-list"></div>
+        </div>
+        <div class="chat-wrap">
+          <div class="chat-messages" id="chat-messages"></div>
+          <div id="chat-img-preview-row"></div>
+          <div class="chat-input-row">
+            <input type="file" id="chat-image-input" accept="image/*" style="display:none;" onchange="handleChatImagePick(this)">
+            <button class="chat-attach-btn" onclick="document.getElementById('chat-image-input').click()" title="Attach image">📎</button>
+            <input type="text" id="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="btn btn-primary" onclick="sendChat()">Send</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- HR ---------- -->
+    <section class="page" id="page-hr">
+      <div class="page-head"><div><div class="eyebrow">People ops</div><h2>HR Management</h2><p>Set salary & incentives, score performance, review leave requests.</p></div></div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title">🎂 Birthdays this month</div>
+        <div id="hr-birthdays"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title">🟢 Team status — today</div>
+        <div id="hr-status-board"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <div class="activity-toolbar">
+          <div class="section-title" style="margin-bottom:0;">🕒 Employee activity — clock in/out & breaks</div>
+          <input type="date" id="hr-activity-date" onchange="renderActivityLog()">
+        </div>
+        <table>
+          <thead><tr><th>Employee</th><th>Clock In</th><th>Clock Out</th><th>Tea Break</th><th>Food Break</th><th>Total break</th></tr></thead>
+          <tbody id="hr-activity-body"></tbody>
+        </table>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title">Team roster</div>
+        <table>
+          <thead><tr><th>Name</th><th>Role</th><th>Birthday</th><th>Base salary</th><th>Incentive</th><th>Score</th><th>Actions</th></tr></thead>
+          <tbody id="hr-roster-body"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Leave requests</div>
+        <table>
+          <thead><tr><th>Employee</th><th>Dates</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="hr-leaves-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---------- TL (password) ---------- -->
+    <section class="page" id="page-tl">
+      <div id="tl-lock" class="lock-screen">
+        <div class="lock-icon">🔒</div>
+        <h2>TL — Task Management</h2>
+        <p style="color:var(--ink-soft);font-size:13.5px;margin:10px 0 18px;">Enter your TL access code to assign and track team tasks.</p>
+        <input type="password" id="tl-password" placeholder="TL access code" style="text-align:center;padding:10px;border:1px solid var(--line);border-radius:8px;width:220px;">
+        <br><button class="btn btn-primary" style="margin-top:12px;" onclick="unlockSection('tl')">Unlock</button>
+        <div id="tl-error" style="color:var(--danger);font-size:12.5px;margin-top:8px;"></div>
+      </div>
+      <div id="tl-content" style="display:none;">
+        <div class="page-head"><div><div class="eyebrow">Team lead</div><h2>Assign & track tasks</h2><p>Give team members a task with a start time and a deadline, and watch progress.</p></div></div>
+
+        <div class="card" style="margin-bottom:18px;">
+          <div class="section-title">🎂 Birthdays this month</div>
+          <div id="tl-birthdays"></div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px;">
+          <div class="section-title">🟢 Team status — today</div>
+          <div id="tl-status-board"></div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px;">
+          <div class="section-title">Assign a new task</div>
+          <div class="inline-form">
+            <div class="field"><label>Task title</label><input type="text" id="task-title" placeholder="e.g. Client X — on-page audit"></div>
+            <div class="field"><label>Assign to</label><select id="task-assignee"></select></div>
+          </div>
+          <div class="inline-form">
+            <div class="field"><label>Start date</label><input type="date" id="task-start-date"></div>
+            <div class="field"><label>Start time</label><input type="time" id="task-start-time"></div>
+            <div class="field"><label>Deadline date</label><input type="date" id="task-end-date"></div>
+            <div class="field"><label>Deadline time</label><input type="time" id="task-end-time"></div>
+          </div>
+          <div class="field"><label>Description</label><textarea id="task-desc" rows="2" placeholder="What needs to be done"></textarea></div>
+          <button class="btn btn-accent" onclick="assignTask()">Assign task</button>
+        </div>
+
+        <div class="card" style="margin-bottom:18px;">
+          <div class="section-title">All tasks <span><select class="month-select" id="tl-status-filter" onchange="renderTL()"><option value="">All statuses</option><option>Pending</option><option>In Progress</option><option>Completed</option></select></span></div>
+          <table>
+            <thead><tr><th>Task</th><th>Assigned to</th><th>Start</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
+            <tbody id="tl-tasks-body"></tbody>
+          </table>
+        </div>
+
+        <div class="grid grid-3" style="margin-bottom:18px;">
+          <div class="card">
+            <div class="section-title">Manage attendance</div>
+            <div class="field"><label>Team member</label><select id="tl-attendance-emp"></select></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="subtle-btn" onclick="manualAttendance('clockin')">Clock In</button>
+              <button class="subtle-btn" onclick="manualAttendance('clockout')">Clock Out</button>
+              <button class="subtle-btn" onclick="manualAttendance('breakin','Tea')">🍵 Tea In</button>
+              <button class="subtle-btn" onclick="manualAttendance('breakout','Tea')">🍵 Tea Out</button>
+              <button class="subtle-btn" onclick="manualAttendance('breakin','Food')">🍱 Food In</button>
+              <button class="subtle-btn" onclick="manualAttendance('breakout','Food')">🍱 Food Out</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="section-title">My leave request</div>
+            <div class="field"><label>From</label><input type="date" id="tl-leave-from"></div>
+            <div class="field"><label>To</label><input type="date" id="tl-leave-to"></div>
+            <div class="field"><label>Reason</label><input type="text" id="tl-leave-reason" placeholder="Brief reason"></div>
+            <button class="btn btn-primary btn-block" onclick="applyLeaveAs()">Submit request</button>
+          </div>
+          <div class="card">
+            <div class="section-title">Suggestion / complaint box <span style="font-size:11px;color:var(--ink-soft);font-weight:500;">→ HR & CEO</span></div>
+            <textarea id="tl-complaint-input" rows="2" placeholder="Flag something to HR/CEO directly..."></textarea>
+            <button class="btn btn-primary btn-block" style="margin-top:8px;" onclick="submitComplaint('tl-complaint-input')">Send</button>
+          </div>
+        </div>
+
+        <div class="card vault-card" style="margin-bottom:18px;">
+          <div class="section-title">🔐 Client accounts vault</div>
+          <div class="vault-lock-note">Visible to Team Lead only — client site & social logins.</div>
+          <div class="inline-form">
+            <div class="field"><label>Client name</label><input type="text" id="ca-name" placeholder="Client name"></div>
+            <div class="field"><label>Business name</label><input type="text" id="ca-business" placeholder="Business name"></div>
+          </div>
+          <div class="inline-form">
+            <div class="field"><label>Website</label><input type="text" id="ca-website" placeholder="https://..."></div>
+            <div class="field"><label>Website password</label><input type="text" id="ca-website-pass" placeholder="Password"></div>
+          </div>
+          <div class="inline-form">
+            <div class="field"><label>Instagram username</label><input type="text" id="ca-insta-user" placeholder="@handle"></div>
+            <div class="field"><label>Instagram password</label><input type="text" id="ca-insta-pass" placeholder="Password"></div>
+          </div>
+          <div class="inline-form">
+            <div class="field"><label>Facebook username</label><input type="text" id="ca-fb-user" placeholder="Page/login"></div>
+            <div class="field"><label>Facebook password</label><input type="text" id="ca-fb-pass" placeholder="Password"></div>
+          </div>
+          <div class="inline-form">
+            <div class="field"><label>Other platform</label><input type="text" id="ca-other-label" placeholder="e.g. LinkedIn, YouTube"></div>
+            <div class="field"><label>Other username</label><input type="text" id="ca-other-user" placeholder="Username"></div>
+            <div class="field"><label>Other password</label><input type="text" id="ca-other-pass" placeholder="Password"></div>
+          </div>
+          <button class="btn btn-accent" onclick="addClientAccount()">Save client account</button>
+          <div style="margin-top:16px;">
+            <table>
+              <thead><tr><th>Client</th><th>Business</th><th>Website</th><th>Instagram</th><th>Facebook</th><th>Other</th><th></th></tr></thead>
+              <tbody id="ca-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- REVENUE (password) ---------- -->
+    <section class="page" id="page-revenue">
+      <div id="revenue-lock" class="lock-screen">
+        <div class="lock-icon">🔒</div>
+        <h2>Revenue & Profit</h2>
+        <p style="color:var(--ink-soft);font-size:13.5px;margin:10px 0 18px;">Enter your HR/CEO access code to view client billing and profit.</p>
+        <input type="password" id="revenue-password" placeholder="Access code" style="text-align:center;padding:10px;border:1px solid var(--line);border-radius:8px;width:220px;">
+        <br><button class="btn btn-primary" style="margin-top:12px;" onclick="unlockSection('revenue')">Unlock</button>
+        <div id="revenue-error" style="color:var(--danger);font-size:12.5px;margin-top:8px;"></div>
+      </div>
+      <div id="revenue-content" style="display:none;">
+        <div class="page-head">
+          <div><div class="eyebrow">Finance</div><h2>Monthly revenue & profit</h2><p>Client billing, payment status, expenses and total profit.</p></div>
+          <select class="month-select" id="revenue-month" onchange="renderRevenue()"></select>
+        </div>
+
+        <div id="revenue-alerts"></div>
+
+        <div class="grid grid-4" style="margin-bottom:18px;">
+          <div class="card stat-card acc-navy"><div class="stat-label">Total billed</div><div class="stat-value" id="rev-total">₹0</div></div>
+          <div class="card stat-card acc-teal"><div class="stat-label">Received</div><div class="stat-value" id="rev-paid">₹0</div></div>
+          <div class="card stat-card acc-accent"><div class="stat-label">Pending</div><div class="stat-value" id="rev-pending">₹0</div></div>
+          <div class="card stat-card acc-purple"><div class="stat-label">Holding</div><div class="stat-value" id="rev-holding">₹0</div></div>
+        </div>
+        <div class="grid grid-4" style="margin-bottom:18px;">
+          <div class="card stat-card"><div class="stat-label">GST collected</div><div class="stat-value" id="rev-gst">₹0</div></div>
+          <div class="card stat-card"><div class="stat-label">Tax / rental</div><div class="stat-value" id="rev-tax">₹0</div></div>
+          <div class="card stat-card"><div class="stat-label">Expenses</div><div class="stat-value" id="rev-exp">₹0</div></div>
+          <div class="card stat-card" style="border-top-color:var(--accent);"><div class="stat-label">Total profit</div><div class="stat-value" id="rev-profit">₹0</div></div>
+        </div>
+
+        <div class="grid grid-2" style="margin-bottom:18px;">
+          <div class="card">
+            <div class="section-title">Add client billing entry</div>
+            <div class="inline-form">
+              <div class="field"><label>Client name</label><input type="text" id="cl-name" placeholder="Client name"></div>
+              <div class="field"><label>Business name</label><input type="text" id="cl-business" placeholder="Business / company name"></div>
+            </div>
+            <div class="field">
+              <label>Services picked</label>
+              <div id="cl-services" style="display:flex;flex-wrap:wrap;gap:10px;padding:8px 0;">
+                <label class="tag" style="cursor:pointer;"><input type="checkbox" value="SEO" style="margin-right:4px;">SEO</label>
+                <label class="tag" style="cursor:pointer;"><input type="checkbox" value="SMM" style="margin-right:4px;">SMM</label>
+                <label class="tag" style="cursor:pointer;"><input type="checkbox" value="SEM" style="margin-right:4px;">SEM</label>
+                <label class="tag" style="cursor:pointer;"><input type="checkbox" value="PPC" style="margin-right:4px;">PPC</label>
+                <label class="tag" style="cursor:pointer;"><input type="checkbox" value="Ads" style="margin-right:4px;">Ads</label>
+                <label class="tag" style="cursor:pointer;"><input type="checkbox" value="PR" style="margin-right:4px;">PR</label>
+                <label class="tag" style="cursor:pointer;"><input type="checkbox" value="Website Design" style="margin-right:4px;">Website Design</label>
+                <label class="tag" style="cursor:pointer;"><input type="checkbox" value="Other" style="margin-right:4px;">Other</label>
+              </div>
+              <input type="text" id="cl-service-other" placeholder="If Other, specify here" style="margin-top:4px;">
+            </div>
+            <div class="inline-form">
+              <div class="field"><label>Package amount</label><input type="number" id="cl-amount" placeholder="0"></div>
+              <div class="field"><label>Paid</label><input type="number" id="cl-paid" placeholder="0"></div>
+              <div class="field"><label>Pending</label><input type="number" id="cl-pendingamt" placeholder="0"></div>
+              <div class="field"><label>Holding</label><input type="number" id="cl-holding" placeholder="0"></div>
+            </div>
+            <div class="inline-form">
+              <div class="field"><label>GST amount</label><input type="number" id="cl-gst" placeholder="0"></div>
+              <div class="field"><label>Tax / rental</label><input type="number" id="cl-tax" placeholder="0"></div>
+              <div class="field"><label>Payment status</label>
+                <select id="cl-paystatus">
+                  <option>Paid</option>
+                  <option selected>Pending</option>
+                  <option>Hold</option>
+                </select>
+              </div>
+            </div>
+            <div class="inline-form">
+              <div class="field"><label>Client joining date</label><input type="date" id="cl-joining"></div>
+              <div class="field"><label>Billing month</label><input type="month" id="cl-month"></div>
+              <div class="field"><label>Next meeting date</label><input type="date" id="cl-meeting"></div>
+            </div>
+            <button class="btn btn-accent" onclick="addClientEntry()">Add entry</button>
+          </div>
+          <div class="card">
+            <div class="section-title">Add monthly expense</div>
+            <div class="field"><label>Label</label><input type="text" id="exp-label" placeholder="e.g. Ad tools, salaries, GST, tax, rent"></div>
+            <div class="field"><label>Amount</label><input type="number" id="exp-amount" placeholder="0"></div>
+            <div class="field"><label>Month</label><input type="month" id="exp-month"></div>
+            <button class="btn btn-primary" onclick="addExpense()">Add expense</button>
+            <div style="margin-top:14px;">
+              <div class="section-title" style="font-size:13px;">Expenses this month</div>
+              <table><thead><tr><th>Label</th><th>Amount</th><th></th></tr></thead><tbody id="exp-body"></tbody></table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px;">
+          <div class="section-title">Client billing — selected month</div>
+          <table>
+            <thead><tr><th>Client</th><th>Business</th><th>Services</th><th>Joined</th><th>Package</th><th>Paid</th><th>GST</th><th>Tax/Rental</th><th>Next meeting</th><th>Status</th><th></th></tr></thead>
+            <tbody id="rev-clients-body"></tbody>
+          </table>
+        </div>
+
+        <div class="card" style="border-color:var(--accent);">
+          <div class="section-title">Total profit (this month)</div>
+          <div class="stat-value" id="rev-profit-2" style="font-size:32px;">₹0</div>
+          <div class="stat-sub">Profit = amount received from clients − expenses − GST − tax/rental for the month.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- REPORTS ---------- -->
+    <section class="page" id="page-reports">
+      <div class="page-head"><div><div class="eyebrow">Growth</div><h2>Client & scalability report</h2><p>Client-wise monthly performance and how the business is trending.</p></div></div>
+
+      <div id="reports-alerts"></div>
+
+      <div class="grid grid-3" style="margin-bottom:18px;">
+        <div class="card stat-card"><div class="stat-label">Active clients (this month)</div><div class="stat-value" id="rp-clients">0</div></div>
+        <div class="card stat-card"><div class="stat-label">Revenue this month</div><div class="stat-value" id="rp-revenue">₹0</div></div>
+        <div class="card stat-card"><div class="stat-label">Month-over-month growth</div><div class="stat-value" id="rp-growth">—</div><div class="stat-sub" id="rp-growth-sub"></div></div>
+      </div>
+
+      <div class="grid grid-2" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="section-title">Your vision</div>
+          <textarea id="vision-input" rows="3" placeholder="Write down where the agency is headed, goals for the quarter, priorities..."></textarea>
+          <button class="btn btn-primary" style="margin-top:10px;" onclick="saveVision()">Save vision note</button>
+          <div id="vision-log" style="margin-top:14px;"></div>
+        </div>
+        <div class="card">
+          <div class="section-title">Suggestions & complaints <span style="font-size:11px;color:var(--ink-soft);font-weight:500;">sent directly to HR & CEO</span></div>
+          <div id="complaints-body"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title">Revenue by month</div>
+        <table><thead><tr><th>Month</th><th>Clients</th><th>Billed</th><th>Received</th><th>Pending</th><th>Holding</th></tr></thead><tbody id="rp-month-body"></tbody></table>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Client-wise monthly report</div>
+        <table><thead><tr><th>Client</th><th>Month</th><th>Service</th><th>Billed</th><th>Received</th><th>Status</th></tr></thead><tbody id="rp-client-body"></tbody></table>
+      </div>
+
+      <div class="footer-note">Scalability read: growing month-over-month revenue with a shrinking pending/holding share signals a business that can safely take on more clients; a rising pending+holding share relative to billed revenue is the signal to slow new sign-ups until collections catch up.</div>
+    </section>
+
+    <!-- ---------- FREELANCE HUB ---------- -->
+    <section class="page" id="page-freelance">
+      <div class="page-head"><div><div class="eyebrow">Freelance community</div><h2>Freelance Hub</h2><p>Post jobs with a deadline, freelancers request them, and overdue work gets reassigned.</p></div></div>
+
+      <div class="card" id="freelance-post-card" style="margin-bottom:18px;display:none;">
+        <div class="section-title">Post a freelance job</div>
+        <div class="inline-form">
+          <div class="field"><label>Job title</label><input type="text" id="fj-title" placeholder="e.g. Landing page redesign"></div>
+          <div class="field"><label>Deadline</label><input type="date" id="fj-deadline"></div>
+        </div>
+        <div class="field"><label>Description</label><textarea id="fj-desc" rows="2" placeholder="Scope, deliverables, budget..."></textarea></div>
+        <button class="btn btn-accent" onclick="postFreelanceJob()">Post job</button>
+      </div>
+
+      <div class="card" id="freelance-portfolio-card" style="margin-bottom:18px;display:none;">
+        <div class="section-title">My portfolio / profile</div>
+        <div class="inline-form">
+          <div class="field"><label>Project title</label><input type="text" id="pf-title" placeholder="e.g. Brand identity for a cafe"></div>
+        </div>
+        <div class="field"><label>Description</label><textarea id="pf-desc" rows="2" placeholder="What you did, tools used, outcome..."></textarea></div>
+        <div class="field">
+          <label>Project image</label>
+          <div class="upload-drop" id="pf-upload-drop" onclick="document.getElementById('pf-image-input').click()">📷 Click to upload an image</div>
+          <input type="file" id="pf-image-input" accept="image/*" style="display:none;" onchange="handlePortfolioImagePick(this)">
+        </div>
+        <button class="btn btn-accent" onclick="addPortfolioItem()">Add to portfolio</button>
+        <div style="margin-top:16px;">
+          <div class="portfolio-grid" id="my-portfolio-grid"></div>
+        </div>
+      </div>
+
+      <input type="file" id="fj-submit-image-input" accept="image/*" style="display:none;" onchange="handleSubmissionImagePick(this)">
+      <div class="card">
+        <div class="section-title">Open & active jobs</div>
+        <div id="freelance-jobs-body"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+const ROLE_PASSWORDS = {
+  'CEO': 'ceo20193091201210',
+  'HR': 'hr20193091201210',
+  'Manager': 'mgr20193091201210',
+  'TL': 'tl20193091201210',
+  'Employee': '3-star20193091201210',
+  'Sales': 'sales20193091201210',
+  'Freelancer': 'free20193091201210'
+};
+let DB = { employees: [], attendance: [], tasks: [], leaves: [], chat: [], messages: [], clients: [], expenses: [], incentiveLog: [], complaints: [], freelanceJobs: [], ceoVision: [], portfolios: [], clientAccounts: [] };
+let pendingChatImage = null;
+let pendingPortfolioImage = null;
+let currentUser = null;
+let unlocked = { tl:false, revenue:false };
+let saveTimer = null;
+let activeContactId = null;
+const REVENUE_ROLES = ['CEO','HR'];
+
+const uid = () => Math.random().toString(36).slice(2,10);
+const money = (n) => '₹' + (Number(n)||0).toLocaleString('en-IN');
+const todayStr = () => new Date().toISOString().slice(0,10);
+const monthStr = (d) => (d||new Date().toISOString()).slice(0,7);
+const nowTime = () => new Date().toTimeString().slice(0,5);
+
+async function loadAll(){
+  try{
+    const res = await window.storage.get('agency-data', true);
+    if(res && res.value){ DB = JSON.parse(res.value); }
+  }catch(e){ /* no data yet */ }
+  DB.messages = DB.messages || [];
+  DB.chat = DB.chat || [];
+  DB.incentiveLog = DB.incentiveLog || [];
+  DB.complaints = DB.complaints || [];
+  DB.freelanceJobs = DB.freelanceJobs || [];
+  DB.ceoVision = DB.ceoVision || [];
+  DB.portfolios = DB.portfolios || [];
+  DB.clientAccounts = DB.clientAccounts || [];
+  try{
+    const sess = await window.storage.get('session-user', false);
+    if(sess && sess.value){
+      const u = JSON.parse(sess.value);
+      const found = DB.employees.find(e=>e.id===u.id);
+      if(found) currentUser = found;
+    }
+  }catch(e){ /* not logged in */ }
+}
+
+function queueSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async ()=>{
+    try{ await window.storage.set('agency-data', JSON.stringify(DB), true); }catch(e){ console.error('save failed', e); }
+  }, 250);
+}
+
+async function saveSession(){
+  try{ await window.storage.set('session-user', JSON.stringify({id:currentUser.id}), false); }catch(e){}
+}
+
+function initials(name){
+  return name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+}
+
+function renderLogin(){
+  const wrap = document.getElementById('existing-users');
+  wrap.innerHTML = '';
+  if(DB.employees.length===0){
+    wrap.innerHTML = '<span style="color:var(--ink-soft);font-size:13px;">No team members yet — add the first one below.</span>';
+    return;
+  }
+  DB.employees.forEach(emp=>{
+    const chip = document.createElement('button');
+    chip.className='user-chip';
+    chip.innerHTML = `${emp.name} <span class="role-pill">${emp.role}</span>`;
+    chip.onclick = ()=>login(emp.id);
+    wrap.appendChild(chip);
+  });
+}
+
+function login(id){
+  const emp = DB.employees.find(e=>e.id===id);
+  if(!emp) return;
+  currentUser = emp;
+  saveSession();
+  boot();
+}
+
+function createAndLogin(){
+  const name = document.getElementById('new-name').value.trim();
+  const role = document.getElementById('new-role').value;
+  const dept = document.getElementById('new-dept').value.trim();
+  const birthday = document.getElementById('new-birthday').value || null;
+  const code = document.getElementById('new-role-code').value;
+  const errEl = document.getElementById('new-role-error');
+  errEl.textContent = '';
+  if(!name){ alert('Enter a name to continue.'); return; }
+  if(code !== ROLE_PASSWORDS[role]){
+    errEl.textContent = `Incorrect access code for ${role}.`;
+    return;
+  }
+  const emp = { id: uid(), name, role, department: dept, birthday, baseSalary:0, incentive:0, performanceScore:null };
+  DB.employees.push(emp);
+  queueSave();
+  document.getElementById('new-role-code').value = '';
+  login(emp.id);
+}
+
+function logout(){
+  currentUser = null;
+  window.storage.delete('session-user', false).catch(()=>{});
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('login-screen').style.display='flex';
+  renderLogin();
+}
+
+function boot(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('active');
+  document.getElementById('side-name').textContent = currentUser.name;
+  document.getElementById('side-role').textContent = currentUser.role + (currentUser.department? ' · '+currentUser.department : '');
+  document.getElementById('side-avatar').textContent = initials(currentUser.name);
+  document.getElementById('dash-hello').textContent = 'Hi ' + currentUser.name.split(' ')[0] + ', here\'s your day';
+  populateMonthPickers();
+  applyRoleVisibility();
+  showPage(landingPage(currentUser.role));
+  renderAll();
+}
+
+// Each role only gets its own working section, plus Messages for everyone.
+function roleRules(role){
+  return {
+    dashboard: ['Employee','Manager','Sales'].includes(role),
+    chat: true,
+    hr: role === 'HR',
+    tl: role === 'TL',
+    revenue: REVENUE_ROLES.includes(role),
+    reports: REVENUE_ROLES.includes(role),
+    freelance: true
+  };
+}
+function landingPage(role){
+  if(role === 'Employee' || role === 'Manager' || role === 'Sales') return 'dashboard';
+  if(role === 'TL') return 'tl';
+  if(role === 'HR') return 'hr';
+  if(role === 'CEO') return 'reports';
+  if(role === 'Freelancer') return 'freelance';
+  return 'dashboard';
+}
+
+function applyRoleVisibility(){
+  const rules = roleRules(currentUser.role);
+  Object.keys(rules).forEach(page=>{
+    const btn = document.querySelector('.nav-item[data-page="'+page+'"]');
+    if(btn) btn.style.display = rules[page] ? 'flex' : 'none';
+  });
+}
+
+function showPage(name){
+  const rules = roleRules(currentUser.role);
+  if(!rules[name]){
+    alert('Your role doesn\'t have access to that section.');
+    name = landingPage(currentUser.role);
+  }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.page===name));
+  renderAll();
+}
+
+function unlockSection(section){
+  const pass = document.getElementById(section+'-password').value;
+  const expected = ROLE_PASSWORDS[currentUser.role];
+  if(pass && pass === expected){
+    unlocked[section] = true;
+    document.getElementById(section+'-lock').style.display='none';
+    document.getElementById(section+'-content').style.display='block';
+    renderAll();
+  }else{
+    document.getElementById(section+'-error').textContent = 'Incorrect password for your role.';
+  }
+}
+
+/* ---------------- DASHBOARD ---------------- */
+function renderDashboard(){
+  const today = todayStr();
+  const rec = DB.attendance.find(a=>a.empId===currentUser.id && a.date===today);
+  const dot = document.getElementById('clock-dot');
+  const txt = document.getElementById('clock-status-text');
+  const btn = document.getElementById('clock-btn');
+  const teaBtn = document.getElementById('tea-break-btn');
+  const foodBtn = document.getElementById('food-break-btn');
+  const breakSub = document.getElementById('break-sub');
+  rec && (rec.breaks = rec.breaks || []);
+  const openBreak = rec && rec.breaks.find(b=>!b.end);
+
+  if(rec && !rec.clockOut){
+    if(openBreak){
+      dot.classList.remove('live'); txt.textContent = `On ${breakTypeLabel(openBreak.type)} since ${openBreak.start}`; btn.textContent='Clock Out'; btn.disabled=true;
+    }else{
+      dot.classList.add('live'); txt.textContent = 'Clocked in at ' + rec.clockIn; btn.textContent='Clock Out'; btn.disabled=false;
+    }
+  }else if(rec && rec.clockOut){
+    dot.classList.remove('live'); txt.textContent = `Worked ${rec.clockIn} → ${rec.clockOut}`; btn.textContent='Clocked out for today'; btn.disabled=true;
+  }else{
+    dot.classList.remove('live'); txt.textContent='Not clocked in'; btn.textContent='Clock In'; btn.disabled=false;
+  }
+
+  [['Tea',teaBtn],['Food',foodBtn]].forEach(([type,el])=>{
+    if(!el) return;
+    el.classList.remove('on');
+    if(!rec || rec.clockOut){
+      el.disabled = true; el.innerHTML = `<span class="bicon">${type==='Tea'?'🍵':'🍱'}</span> ${type} Break`;
+    }else if(openBreak && openBreak.type===type){
+      el.disabled = false; el.classList.add('on'); el.innerHTML = `<span class="bicon">${type==='Tea'?'🍵':'🍱'}</span> End ${type} Break`;
+    }else if(openBreak){
+      el.disabled = true; el.innerHTML = `<span class="bicon">${type==='Tea'?'🍵':'🍱'}</span> ${type} Break`;
+    }else{
+      el.disabled = false; el.innerHTML = `<span class="bicon">${type==='Tea'?'🍵':'🍱'}</span> ${type} Break`;
+    }
+  });
+
+  if(breakSub){
+    const teaMin = breakMinutesByType(rec,'Tea');
+    const foodMin = breakMinutesByType(rec,'Food');
+    if(!rec || rec.breaks.length===0){ breakSub.textContent = 'No breaks yet today'; }
+    else{
+      let parts = [];
+      if(teaMin) parts.push(`🍵 Tea ${teaMin}m`);
+      if(foodMin) parts.push(`🍱 Food ${foodMin}m`);
+      breakSub.textContent = parts.length ? parts.join(' · ') + ' today' : 'No breaks yet today';
+    }
+  }
+
+  document.getElementById('my-salary').textContent = money(currentUser.baseSalary);
+  document.getElementById('my-incentive').textContent = money(currentUser.incentive);
+  document.getElementById('my-score').textContent = currentUser.performanceScore==null ? '—' : currentUser.performanceScore;
+
+  const lastInc = DB.incentiveLog.filter(l=>l.empId===currentUser.id).sort((a,b)=>b.date.localeCompare(a.date))[0];
+  const incSub = document.getElementById('my-incentive-sub');
+  if(incSub) incSub.textContent = lastInc ? `Increased by ${money(lastInc.amount)} on ${lastInc.date}` : 'No incentives yet';
+
+  renderBirthdayBanner();
+  renderBirthdayWidget('dash-birthdays');
+  renderMyComplaints();
+
+  const tbody = document.getElementById('my-tasks-body');
+  const myTasks = DB.tasks.filter(t=>t.assignedTo===currentUser.id).sort((a,b)=>(a.endDate+a.endTime).localeCompare(b.endDate+b.endTime));
+  tbody.innerHTML = myTasks.length? '' : '<tr class="empty-row"><td colspan="4">No tasks assigned yet.</td></tr>';
+  myTasks.forEach(t=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${escapeHtml(t.title)}</strong>${t.desc?`<div class="task-note">${escapeHtml(t.desc)}</div>`:''}</td>
+      <td>${t.endDate||'—'} ${t.endTime||''}</td>
+      <td>${statusBadge(t.status)}</td>
+      <td><select onchange="updateTaskStatus('${t.id}', this.value)">
+            <option ${t.status==='Pending'?'selected':''}>Pending</option>
+            <option ${t.status==='In Progress'?'selected':''}>In Progress</option>
+            <option ${t.status==='Completed'?'selected':''}>Completed</option>
+          </select></td>`;
+    tbody.appendChild(tr);
+  });
+
+  const lb = document.getElementById('my-leaves-body');
+  const myLeaves = DB.leaves.filter(l=>l.empId===currentUser.id).sort((a,b)=>b.from.localeCompare(a.from));
+  lb.innerHTML = myLeaves.length? '' : '<div style="color:var(--ink-soft);font-size:13px;padding:10px 0;">No requests yet.</div>';
+  myLeaves.forEach(l=>{
+    const div = document.createElement('div');
+    div.className = 'leave-timeline-item';
+    div.innerHTML = `<div class="leave-timeline-bar ${l.status}"></div>
+      <div style="flex:1;">
+        <div class="leave-timeline-dates">${l.from} → ${l.to}</div>
+        ${l.reason?`<div class="leave-timeline-reason">${escapeHtml(l.reason)}</div>`:''}
+      </div>
+      ${statusBadge2(l.status)}`;
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    lb.appendChild(div);
+  });
+
+  renderWeekStrip();
+  renderLeaveBalance();
+}
+
+function downloadPayslip(empId){
+  const emp = DB.employees.find(e=>e.id===empId);
+  if(!emp){ alert('Employee not found.'); return; }
+  if(!window.jspdf){ alert('Payslip generator is still loading — try again in a moment.'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'pt', format:'a4' });
+  const monthName = new Date().toLocaleString('default',{month:'long', year:'numeric'});
+  const base = emp.baseSalary||0;
+  const incentive = emp.incentive||0;
+  const total = base + incentive;
+
+  doc.setFillColor(22,28,43);
+  doc.rect(0,0,595,90,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold'); doc.setFontSize(20);
+  doc.text('Loopline', 40, 45);
+  doc.setFont('helvetica','normal'); doc.setFontSize(11);
+  doc.text('Payslip — ' + monthName, 40, 66);
+
+  doc.setTextColor(25,29,38);
+  doc.setFont('helvetica','bold'); doc.setFontSize(13);
+  doc.text('Employee details', 40, 130);
+  doc.setFont('helvetica','normal'); doc.setFontSize(11);
+  doc.text('Name: ' + emp.name, 40, 152);
+  doc.text('Role: ' + emp.role + (emp.department? ' · '+emp.department : ''), 40, 170);
+  doc.text('Payslip generated: ' + new Date().toLocaleDateString(), 40, 188);
+
+  doc.setDrawColor(228,224,214);
+  doc.line(40, 210, 555, 210);
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(13);
+  doc.text('Earnings', 40, 236);
+  doc.setFont('helvetica','normal'); doc.setFontSize(11);
+  doc.text('Base salary', 40, 260);
+  doc.text(money(base), 480, 260, {align:'right'});
+  doc.text('Incentive', 40, 280);
+  doc.text(money(incentive), 480, 280, {align:'right'});
+
+  doc.setDrawColor(228,224,214);
+  doc.line(40, 300, 555, 300);
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(13);
+  doc.text('Net pay', 40, 328);
+  doc.setFontSize(16);
+  doc.text(money(total), 480, 328, {align:'right'});
+
+  if(emp.performanceScore!=null){
+    doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
+    doc.setTextColor(91,98,112);
+    doc.text('Performance score this cycle: ' + emp.performanceScore + ' / 100', 40, 360);
+  }
+
+  doc.setFontSize(9);
+  doc.setTextColor(91,98,112);
+  doc.text('This is a system-generated payslip from Loopline.', 40, 780);
+
+  doc.save(`Payslip-${emp.name.replace(/\s+/g,'_')}-${monthStr()}.pdf`);
+}
+
+function switchLeaveTab(tab){
+  document.getElementById('leave-tab-apply').style.display = tab==='apply' ? 'block' : 'none';
+  document.getElementById('leave-tab-history').style.display = tab==='history' ? 'block' : 'none';
+  document.getElementById('leave-tab-btn-apply').classList.toggle('active', tab==='apply');
+  document.getElementById('leave-tab-btn-history').classList.toggle('active', tab==='history');
+}
+
+function daysBetweenInclusive(from, to){
+  const a = new Date(from+'T00:00:00'), b = new Date(to+'T00:00:00');
+  return Math.max(1, Math.round((b-a)/86400000) + 1);
+}
+
+const ANNUAL_LEAVE_QUOTA = 12;
+function renderLeaveBalance(){
+  const fill = document.getElementById('leave-balance-fill');
+  const text = document.getElementById('leave-balance-text');
+  if(!fill || !text) return;
+  const year = new Date().getFullYear().toString();
+  const used = DB.leaves
+    .filter(l=>l.empId===currentUser.id && l.status==='Approved' && l.from.slice(0,4)===year)
+    .reduce((s,l)=>s+daysBetweenInclusive(l.from,l.to), 0);
+  const pct = Math.min(100, Math.round((used/ANNUAL_LEAVE_QUOTA)*100));
+  fill.style.width = pct + '%';
+  text.textContent = `${used} / ${ANNUAL_LEAVE_QUOTA} leave days used this year`;
+  const ring = document.getElementById('leave-ring-fg');
+  const ringText = document.getElementById('leave-ring-text');
+  if(ring){ ring.style.strokeDashoffset = String(157 - (157*pct/100)); }
+  if(ringText){ ringText.textContent = used; }
+}
+
+function renderWeekStrip(){
+  const el = document.getElementById('week-strip');
+  if(!el) return;
+  const today = new Date();
+  const todayIso = todayStr();
+  const days = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date(today);
+    d.setDate(d.getDate()-i);
+    days.push(d);
+  }
+  el.innerHTML = days.map(d=>{
+    const iso = d.toISOString().slice(0,10);
+    const isWeekend = d.getDay()===0 || d.getDay()===6;
+    const rec = DB.attendance.find(a=>a.empId===currentUser.id && a.date===iso);
+    const onLeave = DB.leaves.some(l=>l.empId===currentUser.id && l.status==='Approved' && l.from<=iso && l.to>=iso);
+    let cls;
+    if(iso > todayIso) cls = 'future';
+    else if(onLeave) cls = 'leave';
+    else if(rec) cls = 'present';
+    else if(isWeekend) cls = 'weekend';
+    else cls = 'absent';
+    const label = d.toLocaleDateString('default',{weekday:'short'}).slice(0,3);
+    const dateNum = d.getDate();
+    return `<div class="week-day${iso===todayIso?' today':''}">
+      <div class="wd-label">${label}</div>
+      <div class="wd-dot ${cls}"></div>
+      <div class="wd-date">${dateNum}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleClock(){
+  const today = todayStr();
+  let rec = DB.attendance.find(a=>a.empId===currentUser.id && a.date===today);
+  if(!rec){
+    rec = { id:uid(), empId: currentUser.id, date: today, clockIn: nowTime(), clockOut: null, breaks: [] };
+    DB.attendance.push(rec);
+  }else if(!rec.clockOut){
+    const openBreak = (rec.breaks||[]).find(b=>!b.end);
+    if(openBreak) openBreak.end = nowTime(); // auto-close a running break on clock out
+    rec.clockOut = nowTime();
+  }
+  queueSave(); renderAll();
+}
+
+function toggleBreak(type){
+  const today = todayStr();
+  let rec = DB.attendance.find(a=>a.empId===currentUser.id && a.date===today);
+  if(!rec || rec.clockOut) return;
+  rec.breaks = rec.breaks || [];
+  const openBreak = rec.breaks.find(b=>!b.end);
+  if(openBreak && openBreak.type===type){
+    openBreak.end = nowTime();
+  }else if(!openBreak){
+    rec.breaks.push({ type, start: nowTime(), end: null });
+  }
+  queueSave(); renderAll();
+}
+
+function minutesBetween(t1, t2){
+  const [h1,m1] = t1.split(':').map(Number);
+  const [h2,m2] = t2.split(':').map(Number);
+  return Math.max(0, (h2*60+m2) - (h1*60+m1));
+}
+
+function breakTypeLabel(type){
+  return type==='Tea' ? 'Tea Break' : type==='Food' ? 'Food Break' : 'Break';
+}
+
+function breakMinutesByType(rec, type){
+  if(!rec) return 0;
+  const list = (rec.breaks||[]).filter(b=>(b.type||'Break')===type);
+  return list.reduce((s,b)=>s + minutesBetween(b.start, b.end || nowTime()), 0);
+}
+
+function updateTaskStatus(taskId, status){
+  const t = DB.tasks.find(t=>t.id===taskId);
+  if(!t) return;
+  t.status = status;
+  t.updates = t.updates||[];
+  t.updates.push({ text: `Status set to ${status}`, time: new Date().toLocaleString() });
+  queueSave(); renderAll();
+}
+
+function applyLeave(){
+  const from = document.getElementById('leave-from').value;
+  const to = document.getElementById('leave-to').value;
+  const reason = document.getElementById('leave-reason').value.trim();
+  if(!from || !to){ alert('Pick both dates.'); return; }
+  DB.leaves.push({ id:uid(), empId: currentUser.id, from, to, reason, status:'Pending' });
+  document.getElementById('leave-from').value=''; document.getElementById('leave-to').value=''; document.getElementById('leave-reason').value='';
+  queueSave(); renderAll();
+}
+
+/* ---------------- MESSAGES (role-restricted direct chat) ---------------- */
+function getContacts(){
+  const role = currentUser.role;
+  if(role === 'Employee' || role === 'Manager' || role === 'Sales'){
+    return DB.employees.filter(e => e.id!==currentUser.id && (e.role==='HR' || e.role==='TL'));
+  }
+  if(role === 'HR'){
+    return DB.employees.filter(e => e.id!==currentUser.id && e.role!=='HR');
+  }
+  if(role === 'TL'){
+    return DB.employees.filter(e => e.id!==currentUser.id && e.role!=='TL' && e.role!=='Freelancer');
+  }
+  if(role === 'CEO'){
+    return DB.employees.filter(e => e.id!==currentUser.id && ['HR','TL','Manager','Sales'].includes(e.role));
+  }
+  if(role === 'Freelancer'){
+    return DB.employees.filter(e => e.id!==currentUser.id && ['TL','HR','CEO'].includes(e.role));
+  }
+  return [];
+}
+function renderContacts(){
+  const list = document.getElementById('contact-list');
+  if(!list) return;
+  const contacts = getContacts();
+  if(activeContactId && !contacts.find(c=>c.id===activeContactId)) activeContactId = null;
+  if(!activeContactId && contacts.length) activeContactId = contacts[0].id;
+  list.innerHTML = contacts.length? '' : '<div style="padding:16px;color:var(--ink-soft);font-size:13px;">No contacts available for your role yet.</div>';
+  contacts.forEach(c=>{
+    const unread = DB.messages.filter(m=>m.fromId===c.id && m.toId===currentUser.id && !m.read).length;
+    const div = document.createElement('div');
+    div.className = 'contact-item' + (c.id===activeContactId ? ' active' : '');
+    div.innerHTML = `<span>${escapeHtml(c.name)} <span class="role-pill">${c.role}</span></span>${unread? `<span class="badge badge-pending">${unread}</span>`:''}`;
+    div.onclick = ()=>{ activeContactId = c.id; markRead(c.id); renderContacts(); renderChatThread(); };
+    list.appendChild(div);
+  });
+}
+function markRead(contactId){
+  let changed = false;
+  DB.messages.forEach(m=>{ if(m.fromId===contactId && m.toId===currentUser.id && !m.read){ m.read = true; changed = true; } });
+  if(changed) queueSave();
+}
+function renderChatThread(){
+  const box = document.getElementById('chat-messages');
+  if(!box) return;
+  if(!activeContactId){
+    box.innerHTML = '<div style="color:var(--ink-soft);font-size:13px;text-align:center;margin-top:20px;">Select a contact to start chatting.</div>';
+    return;
+  }
+  const thread = DB.messages
+    .filter(m => (m.fromId===currentUser.id && m.toId===activeContactId) || (m.fromId===activeContactId && m.toId===currentUser.id))
+    .sort((a,b)=>a.ts-b.ts);
+  box.innerHTML = thread.length? '' : '<div style="color:var(--ink-soft);font-size:13px;text-align:center;margin-top:20px;">No messages yet — say hello 👋</div>';
+  thread.forEach(m=>{
+    const div = document.createElement('div');
+    div.className = 'msg' + (m.fromId===currentUser.id ? ' me' : '');
+    div.innerHTML = `<div class="meta">${m.fromId===currentUser.id?'You':escapeHtml(m.fromName)} · ${m.time}</div>${m.text?escapeHtml(m.text):''}${m.image?`<img src="${m.image}" onclick="window.open(this.src)">`:''}`;
+    box.appendChild(div);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+function handleChatImagePick(input){
+  const file = input.files && input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    pendingChatImage = reader.result;
+    renderChatImagePreview();
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+function renderChatImagePreview(){
+  const el = document.getElementById('chat-img-preview-row');
+  if(!el) return;
+  if(!pendingChatImage){ el.innerHTML=''; return; }
+  el.innerHTML = `<div class="chat-img-preview"><img src="${pendingChatImage}"><span>Image attached</span><button onclick="pendingChatImage=null;renderChatImagePreview();">Remove</button></div>`;
+}
+function sendChat(){
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if((!text && !pendingChatImage) || !activeContactId) return;
+  DB.messages.push({ id:uid(), fromId: currentUser.id, fromName: currentUser.name, toId: activeContactId, text, image: pendingChatImage, time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), ts: Date.now(), read:false });
+  input.value='';
+  pendingChatImage = null;
+  renderChatImagePreview();
+  queueSave(); renderChatThread(); renderContacts();
+}
+
+/* ---------------- SHARED: live status board ---------------- */
+function renderStatusBoard(containerId){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const today = todayStr();
+  if(!DB.employees.length){
+    el.innerHTML = '<div style="color:var(--ink-soft);font-size:13px;">No team members yet.</div>';
+    return;
+  }
+  el.innerHTML = '<div class="status-grid"></div>';
+  const grid = el.querySelector('.status-grid');
+  DB.employees.forEach(emp=>{
+    const rec = DB.attendance.find(a=>a.empId===emp.id && a.date===today);
+    const onLeave = DB.leaves.some(l=>l.empId===emp.id && l.status==='Approved' && l.from<=today && l.to>=today);
+    const breaks = rec ? (rec.breaks||[]) : [];
+    const openBreak = breaks.find(b=>!b.end);
+
+    let cls, label, pulse;
+    if(onLeave){ cls='leave'; label='On leave'; pulse='leave'; }
+    else if(!rec){ cls='notin'; label='Not clocked in'; pulse='notin'; }
+    else if(rec.clockOut){ cls='out'; label='Clocked out'; pulse='out'; }
+    else if(openBreak){ cls='break'; label='On '+breakTypeLabel(openBreak.type); pulse='break'; }
+    else{ cls='working'; label='Working'; pulse='working'; }
+
+    const teaMin = breakMinutesByType(rec,'Tea');
+    const foodMin = breakMinutesByType(rec,'Food');
+
+    let timesHtml = '';
+    if(onLeave){
+      timesHtml = `<div class="status-times">Approved leave covers today</div>`;
+    }else if(rec){
+      timesHtml = `<div class="status-times">
+        <div>In: <b>${rec.clockIn||'—'}</b> ${rec.clockOut?` · Out: <b>${rec.clockOut}</b>`:''}</div>
+        <div>${teaMin?`<span class="break-chip tea">🍵 Tea ${teaMin}m</span>`:''}${foodMin?`<span class="break-chip food">🍱 Food ${foodMin}m</span>`:''}${(!teaMin&&!foodMin)?'No breaks yet':''}</div>
+      </div>`;
+    }else{
+      timesHtml = `<div class="status-times">No activity logged yet</div>`;
+    }
+
+    const tile = document.createElement('div');
+    tile.className = 'status-tile status-tile-'+cls;
+    tile.innerHTML = `<span class="status-pulse ${pulse}"></span>
+      <div class="status-tile-top">
+        <div class="avatar">${initials(emp.name)}</div>
+        <div><div class="status-tile-name">${escapeHtml(emp.name)}</div><div class="status-tile-role">${emp.role}${emp.department?' · '+escapeHtml(emp.department):''}</div></div>
+      </div>
+      <span class="status-label ${cls}">${label}</span>
+      ${timesHtml}`;
+    grid.appendChild(tile);
+  });
+}
+
+/* ---------------- HR: employee activity log ---------------- */
+function renderActivityLog(){
+  const dateInput = document.getElementById('hr-activity-date');
+  if(!dateInput) return;
+  if(!dateInput.value) dateInput.value = todayStr();
+  const date = dateInput.value;
+  const body = document.getElementById('hr-activity-body');
+  if(!body) return;
+  const roster = DB.employees.filter(e=>e.role!=='Freelancer');
+  body.innerHTML = roster.length? '' : '<tr class="empty-row"><td colspan="6">No employees yet.</td></tr>';
+  roster.forEach(emp=>{
+    const rec = DB.attendance.find(a=>a.empId===emp.id && a.date===date);
+    const teaMin = breakMinutesByType(rec,'Tea');
+    const foodMin = breakMinutesByType(rec,'Food');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${escapeHtml(emp.name)}</strong><div style="font-size:11px;color:var(--ink-soft);">${emp.role}</div></td>
+      <td class="act-cell-time">${rec&&rec.clockIn?rec.clockIn:'—'}</td>
+      <td class="act-cell-time">${rec&&rec.clockOut?rec.clockOut:(rec?'Still in':'—')}</td>
+      <td>${teaMin?`<span class="break-chip tea">🍵 ${teaMin}m</span>`:'—'}</td>
+      <td>${foodMin?`<span class="break-chip food">🍱 ${foodMin}m</span>`:'—'}</td>
+      <td>${(teaMin+foodMin)?`${teaMin+foodMin}m`:'—'}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* ---------------- HR ---------------- */
+function renderHR(){
+  renderBirthdayWidget('hr-birthdays');
+  renderStatusBoard('hr-status-board');
+  renderActivityLog();
+  const body = document.getElementById('hr-roster-body');
+  body.innerHTML = DB.employees.length? '' : '<tr class="empty-row"><td colspan="7">No employees yet.</td></tr>';
+  DB.employees.forEach(emp=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${escapeHtml(emp.name)}</strong><div style="font-size:11.5px;color:var(--ink-soft);">${emp.department||''}</div></td>
+      <td>${emp.role}</td>
+      <td><input type="date" value="${emp.birthday||''}" style="padding:6px;border:1px solid var(--line);border-radius:6px;" onchange="setBirthday('${emp.id}', this.value)"></td>
+      <td><input type="number" value="${emp.baseSalary||0}" style="width:100px;padding:6px;border:1px solid var(--line);border-radius:6px;" onchange="setSalary('${emp.id}', this.value)"></td>
+      <td>${money(emp.incentive)} <button class="subtle-btn" onclick="giveIncentive('${emp.id}')">+ Give</button></td>
+      <td>${emp.performanceScore==null?'—':emp.performanceScore} <button class="subtle-btn" onclick="setScore('${emp.id}')">Score</button></td>
+      <td><button class="subtle-btn" onclick="removeEmployee('${emp.id}')">Remove</button></td>`;
+    body.appendChild(tr);
+  });
+
+  const lb = document.getElementById('hr-leaves-body');
+  const pending = DB.leaves.slice().sort((a,b)=>b.from.localeCompare(a.from));
+  lb.innerHTML = pending.length? '' : '<tr class="empty-row"><td colspan="5">No leave requests.</td></tr>';
+  pending.forEach(l=>{
+    const emp = DB.employees.find(e=>e.id===l.empId);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${emp?escapeHtml(emp.name):'—'}</td><td>${l.from} → ${l.to}</td><td>${escapeHtml(l.reason||'—')}</td><td>${statusBadge2(l.status)}</td>
+      <td>${l.status==='Pending' ? `<button class="subtle-btn" onclick="setLeaveStatus('${l.id}','Approved')">Approve</button> <button class="subtle-btn" onclick="setLeaveStatus('${l.id}','Rejected')">Reject</button>` : '—'}</td>`;
+    lb.appendChild(tr);
+  });
+}
+function setSalary(id, val){
+  const emp = DB.employees.find(e=>e.id===id); if(!emp) return;
+  emp.baseSalary = Number(val)||0;
+  queueSave(); renderAll();
+}
+function giveIncentive(id){
+  const amt = prompt('Incentive amount to add:');
+  if(amt===null || isNaN(Number(amt)) || Number(amt)===0) return;
+  const emp = DB.employees.find(e=>e.id===id); if(!emp) return;
+  const val = Number(amt);
+  emp.incentive = (emp.incentive||0) + val;
+  DB.incentiveLog.push({ id: uid(), empId: id, amount: val, date: todayStr() });
+  queueSave(); renderAll();
+}
+function setBirthday(id, val){
+  const emp = DB.employees.find(e=>e.id===id); if(!emp) return;
+  emp.birthday = val;
+  queueSave(); renderAll();
+}
+function setScore(id){
+  const score = prompt('Performance score (0-100):');
+  if(score===null || isNaN(Number(score))) return;
+  const emp = DB.employees.find(e=>e.id===id); if(!emp) return;
+  emp.performanceScore = Math.max(0, Math.min(100, Number(score)));
+  queueSave(); renderAll();
+}
+function removeEmployee(id){
+  if(!confirm('Remove this team member?')) return;
+  DB.employees = DB.employees.filter(e=>e.id!==id);
+  queueSave(); renderAll();
+}
+function setLeaveStatus(id, status){
+  const l = DB.leaves.find(l=>l.id===id); if(!l) return;
+  l.status = status;
+  queueSave(); renderAll();
+}
+
+/* ---------------- TL ---------------- */
+function populateAssigneeSelect(){
+  const sel = document.getElementById('task-assignee');
+  if(!sel) return;
+  sel.innerHTML = DB.employees.map(e=>`<option value="${e.id}">${escapeHtml(e.name)} (${e.role})</option>`).join('');
+}
+function assignTask(){
+  const title = document.getElementById('task-title').value.trim();
+  const assignedTo = document.getElementById('task-assignee').value;
+  const startDate = document.getElementById('task-start-date').value;
+  const startTime = document.getElementById('task-start-time').value;
+  const endDate = document.getElementById('task-end-date').value;
+  const endTime = document.getElementById('task-end-time').value;
+  const desc = document.getElementById('task-desc').value.trim();
+  if(!title || !assignedTo || !endDate){ alert('Task title, assignee and deadline date are required.'); return; }
+  DB.tasks.push({ id:uid(), title, desc, assignedTo, assignedBy: currentUser.name, startDate, startTime, endDate, endTime, status:'Pending', updates:[] });
+  ['task-title','task-desc'].forEach(id=>document.getElementById(id).value='');
+  queueSave(); renderAll();
+}
+function renderTL(){
+  renderBirthdayWidget('tl-birthdays');
+  renderStatusBoard('tl-status-board');
+  renderClientAccounts();
+  populateAssigneeSelect();
+  populateAttendanceSelect();
+  const filter = document.getElementById('tl-status-filter') ? document.getElementById('tl-status-filter').value : '';
+  const body = document.getElementById('tl-tasks-body');
+  if(!body) return;
+  let list = DB.tasks.slice().sort((a,b)=>(a.endDate+a.endTime).localeCompare(b.endDate+b.endTime));
+  if(filter) list = list.filter(t=>t.status===filter);
+  body.innerHTML = list.length? '' : '<tr class="empty-row"><td colspan="6">No tasks match.</td></tr>';
+  list.forEach(t=>{
+    const emp = DB.employees.find(e=>e.id===t.assignedTo);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${escapeHtml(t.title)}</strong></td>
+      <td>${emp?escapeHtml(emp.name):'—'}</td>
+      <td>${t.startDate||'—'} ${t.startTime||''}</td>
+      <td>${t.endDate||'—'} ${t.endTime||''}</td>
+      <td>${statusBadge(t.status)}</td>
+      <td><button class="subtle-btn" onclick="removeTask('${t.id}')">Delete</button></td>`;
+    body.appendChild(tr);
+  });
+}
+function removeTask(id){
+  if(!confirm('Delete this task?')) return;
+  DB.tasks = DB.tasks.filter(t=>t.id!==id);
+  queueSave(); renderAll();
+}
+
+/* ---------------- REVENUE ---------------- */
+function populateMonthPickers(){
+  const months = new Set(DB.clients.map(c=>c.month));
+  months.add(monthStr());
+  const sorted = Array.from(months).sort().reverse();
+  const sel = document.getElementById('revenue-month');
+  if(sel){
+    sel.innerHTML = sorted.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('');
+    sel.value = monthStr();
+  }
+  const clMonth = document.getElementById('cl-month'); if(clMonth && !clMonth.value) clMonth.value = monthStr();
+  const expMonth = document.getElementById('exp-month'); if(expMonth && !expMonth.value) expMonth.value = monthStr();
+}
+function monthLabel(m){
+  if(!m) return '—';
+  const [y,mo] = m.split('-');
+  const d = new Date(Number(y), Number(mo)-1, 1);
+  return d.toLocaleString('default',{month:'long', year:'numeric'});
+}
+function addClientEntry(){
+  const name = document.getElementById('cl-name').value.trim();
+  const businessName = document.getElementById('cl-business').value.trim();
+  const checked = Array.from(document.querySelectorAll('#cl-services input[type=checkbox]:checked')).map(cb=>cb.value);
+  const otherVal = document.getElementById('cl-service-other').value.trim();
+  const services = checked.filter(s=>s!=='Other');
+  if(checked.includes('Other') && otherVal) services.push(otherVal);
+  const amount = Number(document.getElementById('cl-amount').value)||0;
+  const paid = Number(document.getElementById('cl-paid').value)||0;
+  const pending = Number(document.getElementById('cl-pendingamt').value)||0;
+  const holding = Number(document.getElementById('cl-holding').value)||0;
+  const gst = Number(document.getElementById('cl-gst').value)||0;
+  const tax = Number(document.getElementById('cl-tax').value)||0;
+  const payStatus = document.getElementById('cl-paystatus').value;
+  const joiningDate = document.getElementById('cl-joining').value;
+  const month = document.getElementById('cl-month').value || monthStr();
+  const meetingDate = document.getElementById('cl-meeting').value || null;
+  if(!name){ alert('Client name is required.'); return; }
+  DB.clients.push({ id:uid(), name, businessName, services, amount, paid, pending, holding, gst, tax, payStatus, joiningDate, month, meetingDate });
+  ['cl-name','cl-business','cl-amount','cl-paid','cl-pendingamt','cl-holding','cl-gst','cl-tax','cl-joining','cl-meeting','cl-service-other'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('#cl-services input[type=checkbox]').forEach(cb=>cb.checked=false);
+  queueSave(); populateMonthPickers(); renderAll();
+}
+function removeClientEntry(id){
+  if(!confirm('Remove this billing entry?')) return;
+  DB.clients = DB.clients.filter(c=>c.id!==id);
+  queueSave(); renderAll();
+}
+function addExpense(){
+  const label = document.getElementById('exp-label').value.trim();
+  const amount = Number(document.getElementById('exp-amount').value)||0;
+  const month = document.getElementById('exp-month').value || monthStr();
+  if(!label){ alert('Expense label required.'); return; }
+  DB.expenses.push({ id:uid(), label, amount, month });
+  document.getElementById('exp-label').value=''; document.getElementById('exp-amount').value='';
+  queueSave(); renderAll();
+}
+function removeExpense(id){
+  DB.expenses = DB.expenses.filter(e=>e.id!==id);
+  queueSave(); renderAll();
+}
+function renderRevenue(){
+  populateMonthPickers();
+  const month = document.getElementById('revenue-month') ? document.getElementById('revenue-month').value : monthStr();
+  const clients = DB.clients.filter(c=>c.month===month);
+  const totalAmt = clients.reduce((s,c)=>s+c.amount,0);
+  const totalPaid = clients.reduce((s,c)=>s+c.paid,0);
+  const totalPending = clients.reduce((s,c)=>s+c.pending,0);
+  const totalHolding = clients.reduce((s,c)=>s+c.holding,0);
+  document.getElementById('rev-total').textContent = money(totalAmt);
+  document.getElementById('rev-paid').textContent = money(totalPaid);
+  document.getElementById('rev-pending').textContent = money(totalPending);
+  document.getElementById('rev-holding').textContent = money(totalHolding);
+
+  const totalGst = clients.reduce((s,c)=>s+(c.gst||0),0);
+  const totalTax = clients.reduce((s,c)=>s+(c.tax||0),0);
+
+  const body = document.getElementById('rev-clients-body');
+  body.innerHTML = clients.length? '' : '<tr class="empty-row"><td colspan="11">No billing entries for this month.</td></tr>';
+  clients.forEach(c=>{
+    const tr = document.createElement('tr');
+    const payClass = c.payStatus==='Paid' ? 'badge-done' : c.payStatus==='Hold' ? 'badge-holding' : 'badge-pending';
+    const daysToMeeting = c.meetingDate ? daysBetweenInclusive(todayStr(), c.meetingDate) - 1 : null;
+    const meetingSoon = c.meetingDate && c.meetingDate>=todayStr() && daysToMeeting<=3;
+    tr.innerHTML = `<td>${escapeHtml(c.name)}</td><td>${escapeHtml(c.businessName||'—')}</td><td>${(c.services||[]).map(s=>`<span class="tag">${escapeHtml(s)}</span>`).join('')||'—'}</td><td>${c.joiningDate||'—'}</td><td>${money(c.amount)}</td><td>${money(c.paid)}</td><td>${money(c.gst||0)}</td><td>${money(c.tax||0)}</td><td>${c.meetingDate?`<span class="badge ${meetingSoon?'badge-holding':'badge-progress'}">${c.meetingDate}</span>`:'—'}</td><td><span class="badge ${payClass}">${c.payStatus||'Pending'}</span></td>
+      <td><button class="subtle-btn" onclick="removeClientEntry('${c.id}')">Delete</button></td>`;
+    body.appendChild(tr);
+  });
+
+  const expenses = DB.expenses.filter(e=>e.month===month);
+  const expBody = document.getElementById('exp-body');
+  expBody.innerHTML = expenses.length? '' : '<tr class="empty-row"><td colspan="3">No expenses logged.</td></tr>';
+  let totalExp = 0;
+  expenses.forEach(e=>{
+    totalExp += e.amount;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHtml(e.label)}</td><td>${money(e.amount)}</td><td><button class="subtle-btn" onclick="removeExpense('${e.id}')">✕</button></td>`;
+    expBody.appendChild(tr);
+  });
+
+  const profit = totalPaid - totalExp - totalGst - totalTax;
+  document.getElementById('rev-gst').textContent = money(totalGst);
+  document.getElementById('rev-tax').textContent = money(totalTax);
+  document.getElementById('rev-exp').textContent = money(totalExp);
+  document.getElementById('rev-profit').textContent = money(profit);
+  document.getElementById('rev-profit-2').textContent = money(profit);
+  renderAlerts('revenue-alerts');
+}
+
+/* ---------------- ALERTS: month-end report + client meetings ---------------- */
+function daysLeftInMonth(){
+  const now = new Date();
+  const lastDay = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  return lastDay - now.getDate();
+}
+function upcomingMeetings(){
+  const today = todayStr();
+  return DB.clients.filter(c=>c.meetingDate && c.meetingDate>=today)
+    .map(c=>({ ...c, daysAway: daysBetweenInclusive(today, c.meetingDate)-1 }))
+    .filter(c=>c.daysAway<=3)
+    .sort((a,b)=>a.meetingDate.localeCompare(b.meetingDate));
+}
+function renderAlerts(containerId){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  let html = '';
+  const daysLeft = daysLeftInMonth();
+  if(daysLeft <= 3){
+    html += `<div class="alert-banner warn">
+      <div class="alert-icon">📅</div>
+      <div>
+        <div class="alert-title">Month-end report reminder</div>
+        <div class="alert-body">${daysLeft===0?'Today is the last day of the month.':`Only ${daysLeft} day(s) left in ${monthLabel(monthStr())}.`} Review client billing, mark payments received, and log all expenses before it closes so this month's profit is accurate.</div>
+      </div>
+    </div>`;
+  }
+  const meetings = upcomingMeetings();
+  if(meetings.length){
+    html += `<div class="alert-banner info">
+      <div class="alert-icon">🗓️</div>
+      <div>
+        <div class="alert-title">Upcoming client meetings</div>
+        <ul class="alert-list">
+          ${meetings.map(m=>`<li><b>${escapeHtml(m.name)}</b>${m.businessName?` (${escapeHtml(m.businessName)})`:''} — ${m.daysAway===0?'today':m.daysAway===1?'tomorrow':`in ${m.daysAway} days`} · ${m.meetingDate}</li>`).join('')}
+        </ul>
+      </div>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+/* ---------------- REPORTS ---------------- */
+function renderReports(){
+  const byMonth = {};
+  DB.clients.forEach(c=>{
+    byMonth[c.month] = byMonth[c.month] || { clients:new Set(), billed:0, paid:0, pending:0, holding:0 };
+    byMonth[c.month].clients.add(c.name);
+    byMonth[c.month].billed += c.amount;
+    byMonth[c.month].paid += c.paid;
+    byMonth[c.month].pending += c.pending;
+    byMonth[c.month].holding += c.holding;
+  });
+  const months = Object.keys(byMonth).sort();
+  const curMonth = monthStr();
+  const cur = byMonth[curMonth] || { clients:new Set(), billed:0, paid:0, pending:0, holding:0 };
+  document.getElementById('rp-clients').textContent = cur.clients.size;
+  document.getElementById('rp-revenue').textContent = money(cur.billed);
+
+  const idx = months.indexOf(curMonth);
+  let growthTxt = '—', growthSub='Not enough history yet';
+  if(idx > 0){
+    const prev = byMonth[months[idx-1]];
+    if(prev.billed>0){
+      const growth = ((cur.billed - prev.billed)/prev.billed)*100;
+      growthTxt = (growth>=0?'+':'') + growth.toFixed(1) + '%';
+      growthSub = 'vs ' + monthLabel(months[idx-1]);
+    }
+  }
+  document.getElementById('rp-growth').textContent = growthTxt;
+  document.getElementById('rp-growth-sub').textContent = growthSub;
+  renderAlerts('reports-alerts');
+
+  const mb = document.getElementById('rp-month-body');
+  const sortedMonths = months.slice().sort().reverse();
+  mb.innerHTML = sortedMonths.length? '' : '<tr class="empty-row"><td colspan="6">No revenue data yet.</td></tr>';
+  sortedMonths.forEach(m=>{
+    const d = byMonth[m];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${monthLabel(m)}</td><td>${d.clients.size}</td><td>${money(d.billed)}</td><td>${money(d.paid)}</td><td>${money(d.pending)}</td><td>${money(d.holding)}</td>`;
+    mb.appendChild(tr);
+  });
+
+  const cb = document.getElementById('rp-client-body');
+  const rows = DB.clients.slice().sort((a,b)=> b.month.localeCompare(a.month) || a.name.localeCompare(b.name));
+  cb.innerHTML = rows.length? '' : '<tr class="empty-row"><td colspan="6">No client entries yet.</td></tr>';
+  rows.forEach(c=>{
+    const status = c.holding>0 ? 'Holding' : (c.pending>0 ? 'Pending' : 'Paid');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${escapeHtml(c.name)}</td><td>${monthLabel(c.month)}</td><td>${escapeHtml(c.service||'—')}</td><td>${money(c.amount)}</td><td>${money(c.paid)}</td><td>${paymentBadge(status)}</td>`;
+    cb.appendChild(tr);
+  });
+}
+
+/* ---------------- SUGGESTIONS / COMPLAINTS ---------------- */
+function submitComplaint(inputId){
+  const id = inputId || 'complaint-input';
+  const el = document.getElementById(id);
+  if(!el) return;
+  const text = el.value.trim();
+  if(!text){ alert('Write something before sending.'); return; }
+  DB.complaints.push({ id: uid(), fromId: currentUser.id, fromName: currentUser.name, fromRole: currentUser.role, text, date: new Date().toLocaleString(), status: 'Open' });
+  el.value = '';
+  queueSave(); renderAll();
+}
+function renderMyComplaints(){
+  const el = document.getElementById('my-complaints');
+  if(!el) return;
+  const mine = DB.complaints.filter(c=>c.fromId===currentUser.id).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!mine.length){ el.innerHTML = ''; return; }
+  el.innerHTML = mine.map(c=>`<div style="border-bottom:1px solid #F0EEE7;padding:6px 0;font-size:12.5px;">
+    <div>${escapeHtml(c.text)}</div>
+    <div style="color:var(--ink-soft);font-size:11px;">${c.date} · ${c.status==='Reviewed'?'<span style="color:var(--teal);font-weight:700;">Reviewed</span>':'Sent to HR & CEO'}</div>
+  </div>`).join('');
+}
+function renderComplaints(){
+  const el = document.getElementById('complaints-body');
+  if(!el) return;
+  const list = DB.complaints.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  if(!list.length){ el.innerHTML = '<div style="color:var(--ink-soft);font-size:13px;">No suggestions or complaints yet.</div>'; return; }
+  el.innerHTML = list.map(c=>`<div style="border-bottom:1px solid #F0EEE7;padding:9px 0;">
+    <div style="display:flex;justify-content:space-between;gap:8px;">
+      <strong style="font-size:13px;">${escapeHtml(c.fromName)} <span class="role-pill">${c.fromRole}</span></strong>
+      ${c.status==='Open' ? `<button class="subtle-btn" onclick="resolveComplaint('${c.id}')">Mark reviewed</button>` : '<span class="badge badge-done">Reviewed</span>'}
+    </div>
+    <div style="font-size:13px;margin-top:4px;">${escapeHtml(c.text)}</div>
+    <div style="font-size:11px;color:var(--ink-soft);margin-top:3px;">${c.date}</div>
+  </div>`).join('');
+}
+function resolveComplaint(id){
+  const c = DB.complaints.find(c=>c.id===id); if(!c) return;
+  c.status = 'Reviewed';
+  queueSave(); renderAll();
+}
+
+/* ---------------- CEO VISION ---------------- */
+function saveVision(){
+  const el = document.getElementById('vision-input');
+  if(!el) return;
+  const text = el.value.trim();
+  if(!text) return;
+  DB.ceoVision.push({ id: uid(), text, date: todayStr() });
+  el.value = '';
+  queueSave(); renderAll();
+}
+function renderVisionLog(){
+  const el = document.getElementById('vision-log');
+  if(!el) return;
+  const list = DB.ceoVision.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  el.innerHTML = list.length ? list.map(v=>`<div style="border-bottom:1px solid #F0EEE7;padding:7px 0;font-size:13px;">
+    <div>${escapeHtml(v.text)}</div><div style="font-size:11px;color:var(--ink-soft);margin-top:2px;">${v.date}</div>
+  </div>`).join('') : '<div style="color:var(--ink-soft);font-size:13px;">No vision notes yet.</div>';
+}
+
+/* ---------------- CLIENT ACCOUNTS VAULT (TL only) ---------------- */
+function addClientAccount(){
+  const name = document.getElementById('ca-name').value.trim();
+  const business = document.getElementById('ca-business').value.trim();
+  const website = document.getElementById('ca-website').value.trim();
+  const websitePass = document.getElementById('ca-website-pass').value.trim();
+  const instaUser = document.getElementById('ca-insta-user').value.trim();
+  const instaPass = document.getElementById('ca-insta-pass').value.trim();
+  const fbUser = document.getElementById('ca-fb-user').value.trim();
+  const fbPass = document.getElementById('ca-fb-pass').value.trim();
+  const otherLabel = document.getElementById('ca-other-label').value.trim();
+  const otherUser = document.getElementById('ca-other-user').value.trim();
+  const otherPass = document.getElementById('ca-other-pass').value.trim();
+  if(!name){ alert('Client name is required.'); return; }
+  DB.clientAccounts.push({ id: uid(), name, business, website, websitePass, instaUser, instaPass, fbUser, fbPass, otherLabel, otherUser, otherPass });
+  ['ca-name','ca-business','ca-website','ca-website-pass','ca-insta-user','ca-insta-pass','ca-fb-user','ca-fb-pass','ca-other-label','ca-other-user','ca-other-pass'].forEach(id=>document.getElementById(id).value='');
+  queueSave(); renderAll();
+}
+function removeClientAccount(id){
+  if(!confirm('Remove this client account record?')) return;
+  DB.clientAccounts = DB.clientAccounts.filter(c=>c.id!==id);
+  queueSave(); renderAll();
+}
+function togglePassVisibility(btn){
+  const span = btn.previousElementSibling;
+  if(!span) return;
+  const isHidden = span.dataset.hidden !== 'false';
+  span.textContent = isHidden ? span.dataset.value : '••••••••';
+  span.dataset.hidden = isHidden ? 'false' : 'true';
+  btn.textContent = isHidden ? '🙈' : '👁';
+}
+function passCellHtml(value){
+  if(!value) return '—';
+  const esc = escapeHtml(value);
+  return `<span class="pass-cell"><span data-hidden="true" data-value="${esc}">••••••••</span><button class="pass-toggle" onclick="togglePassVisibility(this)">👁</button></span>`;
+}
+function renderClientAccounts(){
+  const body = document.getElementById('ca-body');
+  if(!body) return;
+  const list = DB.clientAccounts.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  body.innerHTML = list.length? '' : '<tr class="empty-row"><td colspan="7">No client accounts saved yet.</td></tr>';
+  list.forEach(c=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${escapeHtml(c.name)}</strong></td>
+      <td>${escapeHtml(c.business||'—')}</td>
+      <td class="acct-row-block">${c.website?`<div>${escapeHtml(c.website)}</div>`:'—'}${c.websitePass?`<div>${passCellHtml(c.websitePass)}</div>`:''}</td>
+      <td class="acct-row-block">${c.instaUser?`<div>${escapeHtml(c.instaUser)}</div>${passCellHtml(c.instaPass)}`:'—'}</td>
+      <td class="acct-row-block">${c.fbUser?`<div>${escapeHtml(c.fbUser)}</div>${passCellHtml(c.fbPass)}`:'—'}</td>
+      <td class="acct-row-block">${c.otherLabel?`<div><b>${escapeHtml(c.otherLabel)}</b></div><div>${escapeHtml(c.otherUser||'')}</div>${passCellHtml(c.otherPass)}`:'—'}</td>
+      <td><button class="subtle-btn" onclick="removeClientAccount('${c.id}')">Delete</button></td>`;
+    body.appendChild(tr);
+  });
+}
+
+/* ---------------- TL: manual attendance + own leave ---------------- */
+function populateAttendanceSelect(){
+  const sel = document.getElementById('tl-attendance-emp');
+  if(!sel) return;
+  sel.innerHTML = DB.employees.filter(e=>e.role!=='Freelancer').map(e=>`<option value="${e.id}">${escapeHtml(e.name)} (${e.role})</option>`).join('');
+}
+function manualAttendance(action, breakType){
+  const sel = document.getElementById('tl-attendance-emp');
+  if(!sel || !sel.value) return;
+  const empId = sel.value;
+  const today = todayStr();
+  let rec = DB.attendance.find(a=>a.empId===empId && a.date===today);
+  if(action==='clockin'){
+    if(!rec){ rec = { id:uid(), empId, date: today, clockIn: nowTime(), clockOut: null, breaks: [] }; DB.attendance.push(rec); }
+  }else if(action==='clockout'){
+    if(rec && !rec.clockOut){
+      const ob = (rec.breaks||[]).find(b=>!b.end); if(ob) ob.end = nowTime();
+      rec.clockOut = nowTime();
+    }
+  }else if(action==='breakin'){
+    if(rec && !rec.clockOut){ rec.breaks = rec.breaks||[]; if(!rec.breaks.find(b=>!b.end)) rec.breaks.push({type: breakType||'Break', start: nowTime(), end: null}); }
+  }else if(action==='breakout'){
+    if(rec){ const ob = (rec.breaks||[]).find(b=>!b.end && (b.type||'Break')===(breakType||'Break')); if(ob) ob.end = nowTime(); }
+  }
+  queueSave(); renderAll();
+}
+function applyLeaveAs(){
+  const from = document.getElementById('tl-leave-from').value;
+  const to = document.getElementById('tl-leave-to').value;
+  const reason = document.getElementById('tl-leave-reason').value.trim();
+  if(!from || !to){ alert('Pick both dates.'); return; }
+  DB.leaves.push({ id:uid(), empId: currentUser.id, from, to, reason, status:'Pending' });
+  document.getElementById('tl-leave-from').value=''; document.getElementById('tl-leave-to').value=''; document.getElementById('tl-leave-reason').value='';
+  queueSave(); renderAll();
+}
+
+/* ---------------- FREELANCER PORTFOLIO ---------------- */
+function handlePortfolioImagePick(input){
+  const file = input.files && input.files[0];
+  const drop = document.getElementById('pf-upload-drop');
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    pendingPortfolioImage = reader.result;
+    if(drop){ drop.textContent = '✅ Image ready — ' + file.name; drop.classList.add('has-file'); }
+  };
+  reader.readAsDataURL(file);
+}
+function addPortfolioItem(){
+  const title = document.getElementById('pf-title').value.trim();
+  const desc = document.getElementById('pf-desc').value.trim();
+  if(!title){ alert('Give your project a title.'); return; }
+  DB.portfolios.push({ id: uid(), freelancerId: currentUser.id, title, desc, image: pendingPortfolioImage, date: todayStr() });
+  document.getElementById('pf-title').value=''; document.getElementById('pf-desc').value='';
+  pendingPortfolioImage = null;
+  const drop = document.getElementById('pf-upload-drop');
+  if(drop){ drop.textContent='📷 Click to upload an image'; drop.classList.remove('has-file'); }
+  queueSave(); renderAll();
+}
+function removePortfolioItem(id){
+  if(!confirm('Remove this portfolio item?')) return;
+  DB.portfolios = DB.portfolios.filter(p=>p.id!==id);
+  queueSave(); renderAll();
+}
+function renderPortfolio(){
+  const card = document.getElementById('freelance-portfolio-card');
+  if(!card) return;
+  const isFreelancer = currentUser.role === 'Freelancer';
+  card.style.display = isFreelancer ? 'block' : 'none';
+  if(!isFreelancer) return;
+  const grid = document.getElementById('my-portfolio-grid');
+  const mine = DB.portfolios.filter(p=>p.freelancerId===currentUser.id).sort((a,b)=>b.date.localeCompare(a.date));
+  grid.innerHTML = mine.length? '' : '<div style="color:var(--ink-soft);font-size:13px;">No portfolio items yet — add your first project above.</div>';
+  mine.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'portfolio-item';
+    div.innerHTML = `${p.image?`<img src="${p.image}">`:''}
+      <div class="portfolio-item-body">
+        <div class="portfolio-item-title">${escapeHtml(p.title)}</div>
+        ${p.desc?`<div class="portfolio-item-desc">${escapeHtml(p.desc)}</div>`:''}
+        <button class="subtle-btn portfolio-item-del" onclick="removePortfolioItem('${p.id}')">Remove</button>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+/* ---------------- FREELANCE HUB ---------------- */
+const FREELANCE_MANAGERS = ['TL','HR','CEO'];
+function postFreelanceJob(){
+  const title = document.getElementById('fj-title').value.trim();
+  const deadline = document.getElementById('fj-deadline').value;
+  const desc = document.getElementById('fj-desc').value.trim();
+  if(!title || !deadline){ alert('Job title and deadline are required.'); return; }
+  DB.freelanceJobs.push({ id: uid(), title, desc, deadline, postedBy: currentUser.name, postedByRole: currentUser.role, status: 'Open', assignedFreelancerId: null, assignedFreelancerName: null, requests: [] });
+  document.getElementById('fj-title').value=''; document.getElementById('fj-desc').value=''; document.getElementById('fj-deadline').value='';
+  queueSave(); renderAll();
+}
+function requestFreelanceJob(jobId){
+  const job = DB.freelanceJobs.find(j=>j.id===jobId); if(!job) return;
+  if(job.requests.find(r=>r.freelancerId===currentUser.id)){ alert('You already requested this job.'); return; }
+  job.requests.push({ id: uid(), freelancerId: currentUser.id, freelancerName: currentUser.name, date: todayStr(), status: 'Pending' });
+  queueSave(); renderAll();
+}
+function acceptFreelanceRequest(jobId, freelancerId){
+  const job = DB.freelanceJobs.find(j=>j.id===jobId); if(!job) return;
+  const req = job.requests.find(r=>r.freelancerId===freelancerId); if(!req) return;
+  job.requests.forEach(r=> r.status = (r.freelancerId===freelancerId) ? 'Accepted' : 'Declined');
+  job.assignedFreelancerId = freelancerId;
+  job.assignedFreelancerName = req.freelancerName;
+  job.status = 'Assigned';
+  queueSave(); renderAll();
+}
+let submittingJobId = null;
+let pendingSubmissionNote = '';
+function submitFreelanceJob(jobId){
+  const note = prompt('Add a note about your submission (optional):');
+  if(note===null) return;
+  const wantImage = confirm('Attach an image with your submission? (e.g. a screenshot of the finished work)');
+  if(wantImage){
+    submittingJobId = jobId;
+    pendingSubmissionNote = note;
+    document.getElementById('fj-submit-image-input').click();
+  }else{
+    finalizeSubmission(jobId, note, null);
+  }
+}
+function handleSubmissionImagePick(input){
+  const file = input.files && input.files[0];
+  input.value = '';
+  if(!file){ finalizeSubmission(submittingJobId, pendingSubmissionNote, null); return; }
+  const reader = new FileReader();
+  reader.onload = ()=>{ finalizeSubmission(submittingJobId, pendingSubmissionNote, reader.result); };
+  reader.readAsDataURL(file);
+}
+function finalizeSubmission(jobId, note, image){
+  const job = DB.freelanceJobs.find(j=>j.id===jobId); if(!job) return;
+  job.status = 'Submitted';
+  job.submission = { note: note||'', image: image||null, date: todayStr(), by: currentUser.name };
+  queueSave(); renderAll();
+}
+function approveFreelanceJob(jobId){
+  const job = DB.freelanceJobs.find(j=>j.id===jobId); if(!job) return;
+  job.status = 'Completed';
+  queueSave(); renderAll();
+}
+function requestChangesFreelanceJob(jobId){
+  const job = DB.freelanceJobs.find(j=>j.id===jobId); if(!job) return;
+  job.status = 'Assigned';
+  job.submission = null;
+  queueSave(); renderAll();
+}
+function reassignFreelanceJob(jobId){
+  const job = DB.freelanceJobs.find(j=>j.id===jobId); if(!job) return;
+  if(!confirm('Reassign this job? It will reopen for other freelancers.')) return;
+  job.assignedFreelancerId = null;
+  job.assignedFreelancerName = null;
+  job.status = 'Open';
+  job.requests = [];
+  job.submission = null;
+  queueSave(); renderAll();
+}
+function deleteFreelanceJob(jobId){
+  if(!confirm('Delete this job posting?')) return;
+  DB.freelanceJobs = DB.freelanceJobs.filter(j=>j.id!==jobId);
+  queueSave(); renderAll();
+}
+function renderFreelanceHub(){
+  const postCard = document.getElementById('freelance-post-card');
+  const isManager = FREELANCE_MANAGERS.includes(currentUser.role);
+  if(postCard) postCard.style.display = isManager ? 'block' : 'none';
+  renderPortfolio();
+
+  const body = document.getElementById('freelance-jobs-body');
+  if(!body) return;
+  const today = todayStr();
+  let jobs = DB.freelanceJobs.slice();
+  if(currentUser.role === 'Freelancer'){
+    jobs = jobs.filter(j => j.status==='Open' || j.assignedFreelancerId===currentUser.id);
+  }
+  jobs.sort((a,b)=>a.deadline.localeCompare(b.deadline));
+
+  if(!jobs.length){ body.innerHTML = '<div style="color:var(--ink-soft);font-size:13px;">No freelance jobs right now.</div>'; return; }
+
+  body.innerHTML = jobs.map(j=>{
+    const overdue = j.deadline < today && j.status !== 'Completed';
+    let statusBadgeHtml = j.status==='Completed' ? '<span class="badge badge-done">Completed</span>'
+      : j.status==='Submitted' ? '<span class="badge badge-submitted">Awaiting approval</span>'
+      : overdue ? '<span class="badge badge-rejected">Overdue</span>'
+      : j.status==='Assigned' ? '<span class="badge badge-progress">Assigned</span>'
+      : '<span class="badge badge-pending">Open</span>';
+
+    let actionsHtml = '';
+    if(currentUser.role === 'Freelancer'){
+      if(j.status==='Open'){
+        const already = j.requests.find(r=>r.freelancerId===currentUser.id);
+        actionsHtml = already ? `<span class="badge badge-pending">Requested</span>` : `<button class="subtle-btn" onclick="requestFreelanceJob('${j.id}')">Request this job</button>`;
+      }else if(j.assignedFreelancerId===currentUser.id && j.status==='Assigned'){
+        actionsHtml = `<button class="subtle-btn" onclick="submitFreelanceJob('${j.id}')">Submit for review</button>`;
+      }else if(j.assignedFreelancerId===currentUser.id && j.status==='Submitted'){
+        actionsHtml = `<span class="badge badge-submitted">Waiting on client approval</span>`;
+      }
+    }else if(isManager){
+      const reqRows = j.requests.filter(r=>r.status==='Pending').map(r=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12.5px;">
+          <span>${escapeHtml(r.freelancerName)}</span>
+          <button class="subtle-btn" onclick="acceptFreelanceRequest('${j.id}','${r.freelancerId}')">Assign</button>
+        </div>`).join('');
+      actionsHtml = `${reqRows}
+        ${j.status==='Submitted' ? `<button class="subtle-btn" onclick="approveFreelanceJob('${j.id}')">✅ Approve & complete</button> <button class="subtle-btn" onclick="requestChangesFreelanceJob('${j.id}')">Request changes</button>` : ''}
+        ${(overdue || j.status==='Assigned') && j.status!=='Completed' ? `<button class="subtle-btn" onclick="reassignFreelanceJob('${j.id}')">Reassign</button>` : ''}
+        <button class="subtle-btn" onclick="deleteFreelanceJob('${j.id}')">Delete</button>`;
+    }
+
+    const submissionHtml = j.submission ? `<div class="submission-box">
+        <b>Submitted by ${escapeHtml(j.submission.by)} on ${j.submission.date}</b>
+        ${j.submission.note?`<div>${escapeHtml(j.submission.note)}</div>`:''}
+        ${j.submission.image?`<img src="${j.submission.image}" onclick="window.open(this.src)">`:''}
+      </div>` : '';
+
+    return `<div style="border-bottom:1px solid #F0EEE7;padding:12px 0;">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div>
+          <strong style="font-size:14px;">${escapeHtml(j.title)}</strong>
+          <div style="font-size:12px;color:var(--ink-soft);margin-top:2px;">Posted by ${escapeHtml(j.postedBy)} (${j.postedByRole}) · Deadline: <b>${j.deadline}</b>${j.assignedFreelancerName?` · Assigned to <b>${escapeHtml(j.assignedFreelancerName)}</b>`:''}</div>
+          ${j.desc?`<div class="task-note" style="max-width:520px;">${escapeHtml(j.desc)}</div>`:''}
+          ${submissionHtml}
+        </div>
+        <div style="text-align:right;">${statusBadgeHtml}</div>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">${actionsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------------- shared render / helpers ---------------- */
+function renderAll(){
+  if(!currentUser) return;
+  renderDashboard();
+  renderContacts();
+  renderChatThread();
+  renderHR();
+
+  if(unlocked.tl){
+    document.getElementById('tl-lock').style.display='none';
+    document.getElementById('tl-content').style.display='block';
+    renderTL();
+  }
+  if(unlocked.revenue && REVENUE_ROLES.includes(currentUser.role)){
+    document.getElementById('revenue-lock').style.display='none';
+    document.getElementById('revenue-content').style.display='block';
+    renderRevenue();
+  }
+  if(REVENUE_ROLES.includes(currentUser.role)){
+    renderReports();
+    renderVisionLog();
+    renderComplaints();
+  }
+  renderFreelanceHub();
+}
+
+function statusBadge(status){
+  const map = { 'Pending':'badge-pending', 'In Progress':'badge-progress', 'Completed':'badge-done' };
+  return `<span class="badge ${map[status]||'badge-pending'}">${status}</span>`;
+}
+function statusBadge2(status){
+  const map = { 'Pending':'badge-pending', 'Approved':'badge-approved', 'Rejected':'badge-rejected' };
+  return `<span class="badge ${map[status]||'badge-pending'}">${status}</span>`;
+}
+function paymentBadge(status){
+  const map = { 'Paid':'badge-done', 'Pending':'badge-pending', 'Holding':'badge-holding' };
+  return `<span class="badge ${map[status]||'badge-pending'}">${status}</span>`;
+}
+function isTodayMonthDay(dateStr){
+  if(!dateStr) return false;
+  const d = new Date(dateStr+'T00:00:00');
+  const now = new Date();
+  return d.getMonth()===now.getMonth() && d.getDate()===now.getDate();
+}
+function renderBirthdayBanner(){
+  const el = document.getElementById('birthday-banner');
+  if(!el) return;
+  if(currentUser.birthday && isTodayMonthDay(currentUser.birthday)){
+    el.style.display = 'block';
+    el.textContent = `🎉 Happy Birthday, ${currentUser.name.split(' ')[0]}! Wishing you a great one from the whole team.`;
+  }else{
+    el.style.display = 'none';
+    el.textContent = '';
+  }
+}
+function renderBirthdayWidget(containerId){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const now = new Date();
+  const list = DB.employees.filter(e=>e.birthday).map(e=>{
+    const d = new Date(e.birthday+'T00:00:00');
+    return { name: e.name, month: d.getMonth(), day: d.getDate(), today: d.getMonth()===now.getMonth() && d.getDate()===now.getDate() };
+  }).filter(e=>e.month===now.getMonth()).sort((a,b)=>a.day-b.day);
+  if(!list.length){
+    el.innerHTML = '<div style="color:var(--ink-soft);font-size:13px;">No birthdays this month.</div>';
+    return;
+  }
+  el.innerHTML = list.map(e=>{
+    const label = new Date(2000, e.month, e.day).toLocaleDateString('default',{day:'numeric', month:'short'});
+    return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F0EEE7;font-size:13.5px;">
+      <span>${e.today?'🎂 ':''}${escapeHtml(e.name)}</span><span style="color:var(--ink-soft);">${label}</span></div>`;
+  }).join('');
+}
+function escapeHtml(str){
+  const d = document.createElement('div'); d.textContent = str||''; return d.innerHTML;
+}
+
+/* ---------------- init ---------------- */
+(async function(){
+  await loadAll();
+  document.getElementById('cl-month') && (document.getElementById('cl-month').value = monthStr());
+  document.getElementById('exp-month') && (document.getElementById('exp-month').value = monthStr());
+  if(currentUser){ boot(); } else { renderLogin(); }
+})();
+</script>
+</body>
+</html>

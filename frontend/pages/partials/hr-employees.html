@@ -1,0 +1,35 @@
+<div class="page-head">
+      <div><div class="eyebrow">HRMS</div><h2>Employees</h2><p>Add team members and manage the company roster.</p></div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="section-title">➕ Add team member</div>
+      <div class="inline-form">
+        <div class="field"><label>Full name</label><input type="text" id="hr-new-name" placeholder="e.g. Priya Raman"></div>
+        <div class="field"><label>Work email</label><input type="email" id="hr-new-email" placeholder="priya@company.com"></div>
+        <div class="field"><label>Initial password</label><input type="password" id="hr-new-password" placeholder="Share securely with the employee"></div>
+      </div>
+      <div class="inline-form">
+        <div class="field"><label>Role</label>
+          <select id="hr-new-role">
+            <option value="Employee">Employee</option>
+            <option value="Manager">Manager</option>
+            <option value="Sales">Sales Team</option>
+            <option value="TL">Team Lead</option>
+            <option value="Freelancer">Freelancer</option>
+          </select>
+        </div>
+        <div class="field"><label>Department</label><input type="text" id="hr-new-dept" placeholder="e.g. SEO, Content"></div>
+        <div class="field"><label>Birthday</label><input type="date" id="hr-new-birthday"></div>
+      </div>
+      <div id="hr-add-error" style="color:var(--danger);font-size:12.5px;margin-bottom:8px;"></div>
+      <button type="button" class="btn btn-accent" id="hr-add-btn" onclick="addEmployee()">Create account</button>
+    </div>
+    <div class="card">
+      <div class="section-title">Team roster</div>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Name</th><th>Role</th><th>Team Lead</th><th>Department</th><th>Birthday</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="hr-roster-body"></tbody>
+      </table>
+      </div>
+    </div>

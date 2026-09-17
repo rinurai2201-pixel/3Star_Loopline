@@ -1,0 +1,95 @@
+<div id="revenue-lock" class="lock-screen">
+      <div class="lock-icon">🔒</div>
+      <h2>Revenue & Profit</h2>
+      <p style="color:var(--ink-soft);font-size:13.5px;margin:10px 0 18px;">Enter your HR/CEO access code to view client billing and profit.</p>
+      <input type="password" id="revenue-password" class="lock-input" placeholder="Access code" style="text-align:center;padding:10px;border:1px solid var(--line);border-radius:8px;">
+      <br><button class="btn btn-primary" style="margin-top:12px;" onclick="unlockSection('revenue')">Unlock</button>
+      <div id="revenue-error" style="color:var(--danger);font-size:12.5px;margin-top:8px;"></div>
+    </div>
+    <div id="revenue-content" style="display:none;">
+      <div class="page-head">
+        <div><div class="eyebrow">Finance</div><h2>Monthly revenue & profit</h2><p>Client billing, payment status, expenses and total profit.</p></div>
+        <select class="month-select" id="revenue-month" onchange="renderRevenue()"></select>
+      </div>
+      <div id="revenue-alerts"></div>
+      <div class="grid grid-4" style="margin-bottom:18px;">
+        <div class="card stat-card acc-navy"><div class="stat-label">Total billed</div><div class="stat-value" id="rev-total">₹0</div></div>
+        <div class="card stat-card acc-teal"><div class="stat-label">Received</div><div class="stat-value" id="rev-paid">₹0</div></div>
+        <div class="card stat-card acc-accent"><div class="stat-label">Pending</div><div class="stat-value" id="rev-pending">₹0</div></div>
+        <div class="card stat-card acc-purple"><div class="stat-label">Holding</div><div class="stat-value" id="rev-holding">₹0</div></div>
+      </div>
+      <div class="grid grid-4" style="margin-bottom:18px;">
+        <div class="card stat-card"><div class="stat-label">GST collected</div><div class="stat-value" id="rev-gst">₹0</div></div>
+        <div class="card stat-card"><div class="stat-label">Tax / rental</div><div class="stat-value" id="rev-tax">₹0</div></div>
+        <div class="card stat-card"><div class="stat-label">Expenses</div><div class="stat-value" id="rev-exp">₹0</div></div>
+        <div class="card stat-card" style="border-top-color:var(--accent);"><div class="stat-label">Total profit</div><div class="stat-value" id="rev-profit">₹0</div></div>
+      </div>
+      <div class="grid grid-2" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="section-title">Add client billing entry</div>
+          <div class="inline-form">
+            <div class="field"><label>Client name</label><input type="text" id="cl-name" placeholder="Client name"></div>
+            <div class="field"><label>Business name</label><input type="text" id="cl-business" placeholder="Business / company name"></div>
+          </div>
+          <div class="field">
+            <label>Services picked</label>
+            <div id="cl-services" style="display:flex;flex-wrap:wrap;gap:10px;padding:8px 0;">
+              <label class="tag" style="cursor:pointer;"><input type="checkbox" value="SEO" style="margin-right:4px;">SEO</label>
+              <label class="tag" style="cursor:pointer;"><input type="checkbox" value="SMM" style="margin-right:4px;">SMM</label>
+              <label class="tag" style="cursor:pointer;"><input type="checkbox" value="SEM" style="margin-right:4px;">SEM</label>
+              <label class="tag" style="cursor:pointer;"><input type="checkbox" value="PPC" style="margin-right:4px;">PPC</label>
+              <label class="tag" style="cursor:pointer;"><input type="checkbox" value="Ads" style="margin-right:4px;">Ads</label>
+              <label class="tag" style="cursor:pointer;"><input type="checkbox" value="PR" style="margin-right:4px;">PR</label>
+              <label class="tag" style="cursor:pointer;"><input type="checkbox" value="Website Design" style="margin-right:4px;">Website Design</label>
+              <label class="tag" style="cursor:pointer;"><input type="checkbox" value="Other" style="margin-right:4px;">Other</label>
+            </div>
+            <input type="text" id="cl-service-other" placeholder="If Other, specify here" style="margin-top:4px;">
+          </div>
+          <div class="inline-form">
+            <div class="field"><label>Package amount</label><input type="number" id="cl-amount" placeholder="0"></div>
+            <div class="field"><label>Paid</label><input type="number" id="cl-paid" placeholder="0"></div>
+            <div class="field"><label>Pending</label><input type="number" id="cl-pendingamt" placeholder="0"></div>
+            <div class="field"><label>Holding</label><input type="number" id="cl-holding" placeholder="0"></div>
+          </div>
+          <div class="inline-form">
+            <div class="field"><label>GST amount</label><input type="number" id="cl-gst" placeholder="0"></div>
+            <div class="field"><label>Tax / rental</label><input type="number" id="cl-tax" placeholder="0"></div>
+            <div class="field"><label>Payment status</label>
+              <select id="cl-paystatus"><option>Paid</option><option selected>Pending</option><option>Hold</option></select>
+            </div>
+          </div>
+          <div class="inline-form">
+            <div class="field"><label>Client joining date</label><input type="date" id="cl-joining"></div>
+            <div class="field"><label>Billing month</label><input type="month" id="cl-month"></div>
+            <div class="field"><label>Next meeting date</label><input type="date" id="cl-meeting"></div>
+          </div>
+          <button class="btn btn-accent" onclick="addClientEntry()">Add entry</button>
+        </div>
+        <div class="card">
+          <div class="section-title">Add monthly expense</div>
+          <div class="field"><label>Label</label><input type="text" id="exp-label" placeholder="e.g. Ad tools, salaries, GST, tax, rent"></div>
+          <div class="field"><label>Amount</label><input type="number" id="exp-amount" placeholder="0"></div>
+          <div class="field"><label>Month</label><input type="month" id="exp-month"></div>
+          <button class="btn btn-primary" onclick="addExpense()">Add expense</button>
+          <button class="btn btn-ghost" style="margin-left:8px;" onclick="addPayrollExpense()">Add total payroll as expense</button>
+          <div style="margin-top:14px;">
+            <div class="section-title" style="font-size:13px;">Expenses this month</div>
+            <table><thead><tr><th>Label</th><th>Amount</th><th></th></tr></thead><tbody id="exp-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title">Client billing — selected month</div>
+        <div class="table-scroll">
+        <table>
+          <thead><tr><th>Client</th><th>Business</th><th>Services</th><th>Joined</th><th>Package</th><th>Paid</th><th>GST</th><th>Tax/Rental</th><th>Next meeting</th><th>Status</th><th></th></tr></thead>
+          <tbody id="rev-clients-body"></tbody>
+        </table>
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--accent);">
+        <div class="section-title">Total profit (this month)</div>
+        <div class="stat-value" id="rev-profit-2" style="font-size:32px;">₹0</div>
+        <div class="stat-sub">Profit = amount received from clients − expenses − GST − tax/rental for the month.</div>
+      </div>
+    </div>

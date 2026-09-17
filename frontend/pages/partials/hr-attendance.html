@@ -1,0 +1,70 @@
+<div class="page-head">
+      <div><div class="eyebrow">HRMS</div><h2>Attendance</h2><p>Monitor live team status, review daily records, and manage holidays &amp; weekends.</p></div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="section-title">🟢 Team status — today</div>
+      <div id="hr-status-board"></div>
+    </div>
+    <div class="card holiday-panel" id="hr-holiday-panel" style="margin-bottom:18px;">
+      <div class="activity-toolbar holiday-toolbar">
+        <div>
+          <div class="section-title" style="margin-bottom:4px;">📅 Holidays &amp; weekends</div>
+          <p class="holiday-sub">Shown in employee attendance as holiday or weekend days.</p>
+        </div>
+        <label class="holiday-month-picker">
+          <span>Month</span>
+          <input type="month" id="hr-holiday-month" class="month-select" onchange="changeHolidayMonth(this.value)">
+        </label>
+      </div>
+
+      <div class="holiday-panel-grid">
+        <div class="holiday-block">
+          <div class="holiday-block-head">
+            <span class="holiday-block-title">Weekend days</span>
+            <span class="holiday-block-hint">Applies every week</span>
+          </div>
+          <div id="hr-weekend-days" class="weekend-days-row"></div>
+        </div>
+
+        <div class="holiday-block">
+          <div class="holiday-block-head">
+            <span class="holiday-block-title">Add holiday</span>
+            <span class="holiday-block-hint" id="hr-holiday-month-label">—</span>
+          </div>
+          <div class="holiday-add-form">
+            <div class="field">
+              <label for="hr-holiday-date">Date</label>
+              <input type="date" id="hr-holiday-date">
+            </div>
+            <div class="field holiday-name-field">
+              <label for="hr-holiday-name">Holiday name</label>
+              <input type="text" id="hr-holiday-name" placeholder="e.g. Independence Day">
+            </div>
+            <button type="button" class="btn btn-accent holiday-add-btn" onclick="addHolidayEntry()">Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="holiday-list-head">
+        <span class="holiday-list-title">This month</span>
+        <span class="holiday-count-badge"><span id="hr-holiday-count">0</span> holiday(s)</span>
+      </div>
+      <div class="holiday-table-wrap">
+        <table class="holiday-table">
+          <thead><tr><th>Date</th><th>Name</th><th></th></tr></thead>
+          <tbody id="hr-holidays-list"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="activity-toolbar">
+        <div class="section-title" style="margin-bottom:0;">🕒 Employee activity — clock in/out & breaks</div>
+        <input type="date" id="hr-activity-date" onchange="renderActivityLog()">
+      </div>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Employee</th><th>Clock In</th><th>Clock Out</th><th>Tea Break</th><th>Food Break</th><th>Total break</th></tr></thead>
+        <tbody id="hr-activity-body"></tbody>
+      </table>
+      </div>
+    </div>

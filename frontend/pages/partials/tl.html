@@ -1,0 +1,106 @@
+<div id="tl-lock" class="lock-screen" style="display:none;">
+      <div class="lock-icon">🔒</div>
+      <h2>TL — Task Management</h2>
+      <p style="color:var(--ink-soft);font-size:13.5px;margin:10px 0 18px;">Enter your TL access code.</p>
+      <input type="password" id="tl-password" class="lock-input" placeholder="TL access code" style="text-align:center;padding:10px;border:1px solid var(--line);border-radius:8px;">
+      <br><button class="btn btn-primary" style="margin-top:12px;" onclick="unlockSection('tl')">Unlock</button>
+      <div id="tl-error" style="color:var(--danger);font-size:12.5px;margin-top:8px;"></div>
+    </div>
+    <div id="tl-content">
+      <div class="page-head"><div><div class="eyebrow">Team lead</div><h2>Assign & track team tasks</h2><p>Assign work to your team or yourself, then track progress and deadlines.</p></div></div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title">🎂 Birthdays this month</div>
+        <div id="tl-birthdays"></div>
+      </div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title">🟢 Team status — today</div>
+        <div id="tl-status-board"></div>
+      </div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title">Assign a new task</div>
+        <div class="inline-form">
+          <div class="field"><label>Task title</label><input type="text" id="task-title" placeholder="e.g. Client X — on-page audit"></div>
+          <div class="field"><label>Assign to</label><select id="task-assignee"></select></div>
+        </div>
+        <p class="task-assign-hint">You can assign tasks to yourself or any member of your team.</p>
+        <div class="inline-form">
+          <div class="field"><label>Start date</label><input type="date" id="task-start-date"></div>
+          <div class="field"><label>Start time</label><input type="time" id="task-start-time"></div>
+          <div class="field"><label>Deadline date</label><input type="date" id="task-end-date"></div>
+          <div class="field"><label>Deadline time</label><input type="time" id="task-end-time"></div>
+        </div>
+        <div class="field"><label>Description</label><textarea id="task-desc" rows="2" placeholder="What needs to be done"></textarea></div>
+        <button class="btn btn-accent" onclick="assignTask()">Assign task</button>
+      </div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="section-title">Team tasks <span><select class="month-select task-status-select" id="tl-status-filter" onchange="renderTL()"><option value="">All statuses</option></select></span></div>
+        <div class="table-scroll">
+        <table class="task-table">
+          <thead><tr><th>Task</th><th>Assigned to</th><th>Start</th><th>Deadline</th><th>Status</th><th>Progress</th><th></th></tr></thead>
+          <tbody id="tl-tasks-body"></tbody>
+        </table>
+        </div>
+      </div>
+      <div class="grid grid-2" style="margin-bottom:18px;">
+        <div class="card">
+          <div class="section-title">Manage attendance</div>
+          <div class="field"><label>Team member</label><select id="tl-attendance-emp"></select></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="subtle-btn" onclick="manualAttendance('clockin')">Clock In</button>
+            <button class="subtle-btn" onclick="manualAttendance('clockout')">Clock Out</button>
+            <button class="subtle-btn" onclick="manualAttendance('breakin','Tea')">🍵 Tea In</button>
+            <button class="subtle-btn" onclick="manualAttendance('breakout','Tea')">🍵 Tea Out</button>
+            <button class="subtle-btn" onclick="manualAttendance('breakin','Food')">🍱 Food In</button>
+            <button class="subtle-btn" onclick="manualAttendance('breakout','Food')">🍱 Food Out</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-title">My leave request</div>
+          <div class="field"><label>From</label><input type="date" id="tl-leave-from"></div>
+          <div class="field"><label>To</label><input type="date" id="tl-leave-to"></div>
+          <div class="field"><label>Reason</label><input type="text" id="tl-leave-reason" placeholder="Brief reason"></div>
+          <button class="btn btn-primary btn-block" onclick="applyLeaveAs()">Submit request</button>
+        </div>
+      </div>
+      <div class="card complaint-box-card" style="margin-bottom:18px;">
+        <div class="section-title">Suggestion / complaint box <span class="complaint-hint">goes straight to HR & CEO</span></div>
+        <p class="complaint-lead">Share feedback, ideas, or issues privately with HR and leadership.</p>
+        <textarea id="tl-complaint-input" class="complaint-input" rows="5" placeholder="Describe your suggestion or complaint in detail..."></textarea>
+        <div class="complaint-actions">
+          <button class="btn btn-primary" onclick="submitComplaint('tl-complaint-input')">Send to HR & CEO</button>
+        </div>
+        <div id="tl-my-complaints" class="complaint-history"></div>
+      </div>
+      <div class="card vault-card">
+        <div class="section-title">🔐 Client accounts vault</div>
+        <div class="vault-lock-note">Visible to Team Lead only — client site & social logins.</div>
+        <div class="inline-form">
+          <div class="field"><label>Client name</label><input type="text" id="ca-name" placeholder="Client name"></div>
+          <div class="field"><label>Business name</label><input type="text" id="ca-business" placeholder="Business name"></div>
+        </div>
+        <div class="inline-form">
+          <div class="field"><label>Website</label><input type="text" id="ca-website" placeholder="https://..."></div>
+          <div class="field"><label>Website password</label><input type="text" id="ca-website-pass" placeholder="Password"></div>
+        </div>
+        <div class="inline-form">
+          <div class="field"><label>Instagram username</label><input type="text" id="ca-insta-user" placeholder="@handle"></div>
+          <div class="field"><label>Instagram password</label><input type="text" id="ca-insta-pass" placeholder="Password"></div>
+        </div>
+        <div class="inline-form">
+          <div class="field"><label>Facebook username</label><input type="text" id="ca-fb-user" placeholder="Page/login"></div>
+          <div class="field"><label>Facebook password</label><input type="text" id="ca-fb-pass" placeholder="Password"></div>
+        </div>
+        <div class="inline-form">
+          <div class="field"><label>Other platform</label><input type="text" id="ca-other-label" placeholder="e.g. LinkedIn"></div>
+          <div class="field"><label>Other username</label><input type="text" id="ca-other-user" placeholder="Username"></div>
+          <div class="field"><label>Other password</label><input type="text" id="ca-other-pass" placeholder="Password"></div>
+        </div>
+        <button class="btn btn-accent" onclick="addClientAccount()">Save client account</button>
+        <div class="table-scroll" style="margin-top:16px;">
+          <table>
+            <thead><tr><th>Client</th><th>Business</th><th>Website</th><th>Instagram</th><th>Facebook</th><th>Other</th><th></th></tr></thead>
+            <tbody id="ca-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,25 @@
+<div class="page-head">
+      <div><div class="eyebrow">Executive</div><h2>Partners</h2><p>Create partner accounts. Partners get the same executive access as CEO, except adding partners.</p></div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="section-title">➕ Add partner</div>
+      <div class="inline-form">
+        <div class="field"><label>Full name</label><input type="text" id="partner-new-name" placeholder="e.g. Alex Morgan"></div>
+        <div class="field"><label>Work email</label><input type="email" id="partner-new-email" placeholder="alex@company.com"></div>
+        <div class="field"><label>Initial password</label><input type="text" id="partner-new-password" placeholder="Share securely with the partner" autocomplete="off"></div>
+      </div>
+      <div class="inline-form">
+        <div class="field"><label>Department</label><input type="text" id="partner-new-dept" placeholder="Partnership" value="Partnership"></div>
+      </div>
+      <div id="partner-add-error" style="color:var(--danger);font-size:12.5px;margin-bottom:8px;"></div>
+      <button type="button" class="btn btn-accent" id="partner-add-btn" onclick="addPartner()">Create partner</button>
+    </div>
+    <div class="card">
+      <div class="section-title">Partner roster</div>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="partner-roster-body"></tbody>
+      </table>
+      </div>
+    </div>

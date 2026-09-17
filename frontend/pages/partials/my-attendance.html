@@ -1,0 +1,44 @@
+<div class="page-head">
+      <div><div class="eyebrow">Self-service</div><h2>My Attendance</h2><p>Clock in, take breaks, and review your monthly attendance log.</p></div>
+    </div>
+    <div class="att-hero">
+      <div class="att-hero-main">
+        <div class="att-hero-clockicon"><span class="dot" id="clock-dot"></span></div>
+        <div>
+          <div class="att-hero-label">Attendance today</div>
+          <div class="att-hero-status" id="clock-status-text">Not clocked in</div>
+          <div class="att-hero-sub" id="break-sub">No breaks yet today</div>
+        </div>
+      </div>
+      <div class="att-hero-actions">
+        <button class="btn btn-accent" id="clock-btn" onclick="toggleClock()">Clock In</button>
+        <div class="break-btn-row">
+          <button class="break-btn" id="tea-break-btn" onclick="toggleBreak('Tea')" disabled><span class="bicon">🍵</span> Tea Break</button>
+          <button class="break-btn" id="food-break-btn" onclick="toggleBreak('Food')" disabled><span class="bicon">🍱</span> Food Break</button>
+        </div>
+      </div>
+    </div>
+    <div class="week-strip" id="week-strip"></div>
+
+    <div class="card att-month-card">
+      <div class="activity-toolbar att-month-toolbar">
+        <div class="section-title" style="margin-bottom:0;">📅 Monthly attendance</div>
+        <input type="month" id="att-month-picker" class="month-select" onchange="changeAttendanceMonth(this.value)">
+      </div>
+      <div class="att-month-stats" id="att-month-stats"></div>
+      <div class="att-month-table-wrap">
+        <table class="att-month-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Clock In</th>
+              <th>Clock Out</th>
+              <th>Working Hours</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody id="att-month-body"></tbody>
+        </table>
+      </div>
+    </div>

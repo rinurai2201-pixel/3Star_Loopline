@@ -1,0 +1,44 @@
+<div class="page-head"><div><div class="eyebrow">Freelance community</div><h2>Freelance Hub</h2><p>Post jobs with a deadline, freelancers request them, and overdue work gets reassigned.</p></div></div>
+    <div class="card" id="freelance-post-card" style="margin-bottom:18px;display:none;">
+      <div class="section-title">Post a freelance job</div>
+      <div class="inline-form">
+        <div class="field"><label>Job title</label><input type="text" id="fj-title" placeholder="e.g. Landing page redesign"></div>
+        <div class="field"><label>Deadline</label><input type="date" id="fj-deadline"></div>
+      </div>
+      <div class="field"><label>Description</label><textarea id="fj-desc" rows="2" placeholder="Scope, deliverables, budget..."></textarea></div>
+      <button class="btn btn-accent" onclick="postFreelanceJob()">Post job</button>
+    </div>
+    <div class="card" id="freelance-portfolio-card" style="margin-bottom:18px;display:none;">
+      <div class="section-title">My portfolio / profile</div>
+      <div class="inline-form">
+        <div class="field"><label>Project title</label><input type="text" id="pf-title" placeholder="e.g. Brand identity for a cafe"></div>
+      </div>
+      <div class="field"><label>Description</label><textarea id="pf-desc" rows="2" placeholder="What you did, tools used, outcome..."></textarea></div>
+      <div class="field">
+        <label>Project image</label>
+        <div class="upload-drop" id="pf-upload-drop" onclick="document.getElementById('pf-image-input').click()">📷 Click to upload an image</div>
+        <input type="file" id="pf-image-input" accept="image/*" style="display:none;" onchange="handlePortfolioImagePick(this)">
+      </div>
+      <button class="btn btn-accent" onclick="addPortfolioItem()">Add to portfolio</button>
+      <div style="margin-top:16px;"><div class="portfolio-grid" id="my-portfolio-grid"></div></div>
+    </div>
+    <input type="file" id="fj-submit-image-input" accept="image/*" style="display:none;" onchange="handleSubmissionImagePick(this)">
+    <div class="card freelance-jobs-card">
+      <div class="freelance-jobs-toolbar">
+        <div>
+          <div class="section-title" style="margin-bottom:6px;">Open & active jobs</div>
+          <div class="freelance-jobs-stats" id="freelance-jobs-stats"></div>
+        </div>
+        <div class="freelance-jobs-filters" id="freelance-jobs-filters"></div>
+      </div>
+      <div class="freelance-jobs-grid" id="freelance-jobs-body"></div>
+    </div>
+    <div class="card complaint-box-card">
+      <div class="section-title">Suggestion / complaint box <span class="complaint-hint">goes straight to HR & CEO</span></div>
+      <p class="complaint-lead">Share feedback, ideas, or issues privately with HR and leadership.</p>
+      <textarea id="freelance-complaint-input" class="complaint-input" rows="5" placeholder="Describe your suggestion or complaint in detail..."></textarea>
+      <div class="complaint-actions">
+        <button class="btn btn-primary" onclick="submitComplaint('freelance-complaint-input')">Send to HR & CEO</button>
+      </div>
+      <div id="freelance-my-complaints" class="complaint-history"></div>
+    </div>

@@ -1,0 +1,31 @@
+<div class="page-head">
+      <div><div class="eyebrow">Self-service</div><h2>My Leave</h2><p>Apply for leave and track your annual balance.</p></div>
+    </div>
+    <div class="card leave-card">
+      <div class="section-title">Leave balance</div>
+      <div class="leave-tabs">
+        <button class="leave-tab active" id="leave-tab-btn-apply" onclick="switchLeaveTab('apply')">Apply</button>
+        <button class="leave-tab" id="leave-tab-btn-history" onclick="switchLeaveTab('history')">History</button>
+      </div>
+      <div class="leave-balance-ring-wrap">
+        <svg class="leave-balance-ring" width="60" height="60" viewBox="0 0 60 60">
+          <circle cx="30" cy="30" r="25" fill="none" stroke="#F0EEE7" stroke-width="7"></circle>
+          <circle id="leave-ring-fg" cx="30" cy="30" r="25" fill="none" stroke="url(#leaveGrad)" stroke-width="7" stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="157" transform="rotate(-90 30 30)"></circle>
+          <defs><linearGradient id="leaveGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#3E6E68"/><stop offset="100%" stop-color="#D99A45"/></linearGradient></defs>
+        </svg>
+        <div class="leave-balance-ring-label"><b id="leave-ring-text">0</b>days used this year</div>
+      </div>
+      <div class="leave-balance">
+        <div class="leave-balance-bar"><div class="leave-balance-fill" id="leave-balance-fill" style="width:0%;"></div></div>
+        <div class="leave-balance-text" id="leave-balance-text">0 / 12 leave days used this year</div>
+      </div>
+      <div id="leave-tab-apply">
+        <div class="field"><label>From</label><input type="date" id="leave-from"></div>
+        <div class="field"><label>To</label><input type="date" id="leave-to"></div>
+        <div class="field"><label>Reason</label><textarea id="leave-reason" rows="2" placeholder="Brief reason"></textarea></div>
+        <button class="btn btn-primary btn-block" onclick="applyLeave()">Submit request</button>
+      </div>
+      <div id="leave-tab-history" style="display:none;">
+        <div id="my-leaves-body"></div>
+      </div>
+    </div>

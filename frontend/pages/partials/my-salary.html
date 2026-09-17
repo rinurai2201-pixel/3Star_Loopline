@@ -1,0 +1,53 @@
+<div class="page-head">
+      <div><div class="eyebrow">Self-service</div><h2>My Salary</h2><p>View your monthly payslips and download salary statements issued by HR.</p></div>
+    </div>
+    <div class="grid grid-3" id="my-salary-stats">
+      <div class="card stat-card acc-navy">
+        <div class="stat-label">Latest payslip</div>
+        <div class="stat-value" id="my-latest-net">—</div>
+        <div class="stat-sub" id="my-latest-month">No payslip published yet</div>
+      </div>
+      <div class="card stat-card acc-accent">
+        <div class="stat-label">Base salary (profile)</div>
+        <div class="stat-value" id="my-salary">₹0</div>
+        <div class="stat-sub">Set by HR on your profile</div>
+      </div>
+      <div class="card stat-card acc-teal">
+        <div class="stat-label">Performance score</div>
+        <div class="stat-value" id="my-score">—</div>
+        <div class="stat-sub">Out of 100</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <div class="section-title">Monthly payslip list</div>
+      <div class="att-month-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Base salary</th>
+              <th>Incentive</th>
+              <th>Deductions</th>
+              <th>Net pay</th>
+              <th>Issued on</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="my-payslips-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="payslip-modal-overlay" id="payslip-modal" style="display:none;" onclick="if(event.target===this)closePayslipModal()">
+      <div class="payslip-modal">
+        <div class="payslip-modal-head">
+          <div>
+            <div class="eyebrow">Salary slip</div>
+            <h3 id="payslip-modal-title">Payslip details</h3>
+          </div>
+          <button type="button" class="modal-close" onclick="closePayslipModal()">×</button>
+        </div>
+        <div id="payslip-modal-body"></div>
+        <div class="payslip-modal-foot" id="payslip-modal-foot"></div>
+      </div>
+    </div>

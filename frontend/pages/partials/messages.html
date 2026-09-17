@@ -1,0 +1,17 @@
+<div class="page-head"><div><div class="eyebrow">Messages</div><h2>Direct Messages</h2><p>Message anyone in the company — one-to-one chat.</p></div></div>
+    <div class="grid-msg">
+      <div class="contact-panel">
+        <div class="section-title" style="padding:14px 16px 8px;margin-bottom:0;">Contacts</div>
+        <div id="contact-list"></div>
+      </div>
+      <div class="chat-wrap">
+        <div class="chat-messages" id="chat-messages"></div>
+        <div id="chat-img-preview-row"></div>
+        <div class="chat-input-row">
+          <input type="file" id="chat-image-input" accept="image/*" style="display:none;" onchange="handleChatImagePick(this)">
+          <button class="chat-attach-btn" onclick="document.getElementById('chat-image-input').click()" title="Attach image">📎</button>
+          <input type="text" id="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="btn btn-primary" onclick="sendChat()">Send</button>
+        </div>
+      </div>
+    </div>

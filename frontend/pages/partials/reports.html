@@ -1,0 +1,38 @@
+<div class="page-head"><div><div class="eyebrow">Growth</div><h2>Client & scalability report</h2><p>Client-wise monthly performance and how the business is trending.</p></div></div>
+    <div id="reports-alerts"></div>
+    <div class="grid grid-3" style="margin-bottom:18px;">
+      <div class="card stat-card"><div class="stat-label">Active clients (this month)</div><div class="stat-value" id="rp-clients">0</div></div>
+      <div class="card stat-card"><div class="stat-label">Revenue billed (this month)</div><div class="stat-value" id="rp-revenue">₹0</div></div>
+      <div class="card stat-card" style="border-top-color:var(--accent);"><div class="stat-label">Profit (this month)</div><div class="stat-value" id="rp-profit">₹0</div><div class="stat-sub">Received − expenses − GST − tax</div></div>
+    </div>
+    <div class="grid grid-2" style="margin-bottom:18px;">
+      <div class="card stat-card"><div class="stat-label">Month-over-month growth</div><div class="stat-value" id="rp-growth">—</div><div class="stat-sub" id="rp-growth-sub"></div></div>
+      <div class="card stat-card"><div class="stat-label">Cash received (this month)</div><div class="stat-value" id="rp-received">₹0</div></div>
+    </div>
+    <div class="grid grid-2" style="margin-bottom:18px;">
+      <div class="card">
+        <div class="section-title">Your vision</div>
+        <div class="field" style="margin-bottom:0;">
+          <textarea id="vision-input" rows="4" placeholder="Write down where the agency is headed, goals for the quarter, priorities..."></textarea>
+        </div>
+        <button class="btn btn-primary" style="margin-top:10px;" onclick="saveVision()">Save vision note</button>
+        <div id="vision-log" class="vision-log" style="margin-top:14px;"></div>
+      </div>
+      <div class="card">
+        <div class="section-title">Suggestions & complaints <span style="font-size:11px;color:var(--ink-soft);font-weight:500;">sent directly to HR & CEO</span></div>
+        <div id="complaints-body"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="section-title">Revenue by month</div>
+      <div class="table-scroll">
+      <table><thead><tr><th>Month</th><th>Clients</th><th>Billed</th><th>Received</th><th>Expenses</th><th>GST+Tax</th><th>Profit</th><th>Pending</th></tr></thead><tbody id="rp-month-body"></tbody></table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">Client-wise monthly report</div>
+      <div class="table-scroll">
+      <table><thead><tr><th>Client</th><th>Month</th><th>Service</th><th>Billed</th><th>Received</th><th>Status</th></tr></thead><tbody id="rp-client-body"></tbody></table>
+      </div>
+    </div>
+    <div class="footer-note">Scalability read: growing month-over-month revenue with a shrinking pending/holding share signals a business that can safely take on more clients.</div>

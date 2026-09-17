@@ -1,0 +1,17 @@
+<div class="page-head">
+      <div><div class="eyebrow">HRMS</div><h2>Leave Management</h2><p>Review and approve employee leave requests. Manager leave requires HR approval.</p></div>
+    </div>
+    <div class="grid grid-3" style="margin-bottom:18px;">
+      <div class="card stat-card acc-pending"><div class="stat-label">Pending</div><div class="stat-value" id="leave-stat-pending">0</div></div>
+      <div class="card stat-card acc-teal"><div class="stat-label">Approved this month</div><div class="stat-value" id="leave-stat-approved">0</div></div>
+      <div class="card stat-card acc-navy"><div class="stat-label">Total requests</div><div class="stat-value" id="leave-stat-total">0</div></div>
+    </div>
+    <div class="card">
+      <div class="section-title">All leave requests</div>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Employee</th><th>Dates</th><th>Days</th><th>Reason</th><th>Status</th><th>Reviewed by</th><th>Action</th></tr></thead>
+        <tbody id="hr-leaves-body"></tbody>
+      </table>
+      </div>
+    </div>

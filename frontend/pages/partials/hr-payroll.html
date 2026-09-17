@@ -1,0 +1,86 @@
+<div class="page-head">
+      <div><div class="eyebrow">HRMS</div><h2>Payroll & Salary</h2><p>Issue monthly payslips with full salary breakdown for each employee.</p></div>
+    </div>
+    <div class="card" style="margin-bottom:18px;">
+      <div class="activity-toolbar">
+        <div class="section-title" style="margin-bottom:0;">💰 Payroll overview</div>
+      </div>
+      <div id="hr-payroll-summary"></div>
+    </div>
+    <div class="card">
+      <div class="activity-toolbar">
+        <div class="section-title" style="margin-bottom:0;">📄 Issue monthly payslips</div>
+        <input type="month" id="hr-payslip-month" class="month-select" onchange="loadHRPayslips()">
+      </div>
+      <p style="font-size:13px;color:var(--ink-soft);margin:10px 0 14px;">Enter complete salary details for each employee, save as draft, then publish so they can view and download their payslip.</p>
+      <div class="att-month-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Base</th>
+              <th>Incentive</th>
+              <th>Allowance</th>
+              <th>Deduction</th>
+              <th>Working days</th>
+              <th>Paid days</th>
+              <th>LOP</th>
+              <th>Net pay</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="hr-payslips-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="payslip-modal-overlay" id="hr-payslip-modal" style="display:none;" onclick="if(event.target===this)closeHRPayslipForm()">
+      <div class="payslip-modal payslip-modal-wide">
+        <div class="payslip-modal-head">
+          <div>
+            <div class="eyebrow">HR — Payslip entry</div>
+            <h3 id="hr-payslip-form-title">Create payslip</h3>
+          </div>
+          <button type="button" class="modal-close" onclick="closeHRPayslipForm()">×</button>
+        </div>
+        <form id="hr-payslip-form" onsubmit="saveHRPayslip(event)">
+          <input type="hidden" id="hr-ps-emp-id">
+          <input type="hidden" id="hr-ps-slip-id">
+          <input type="hidden" id="hr-ps-month">
+          <div class="grid grid-2 payslip-form-grid">
+            <div class="field"><label>Employee</label><input type="text" id="hr-ps-emp-name" readonly></div>
+            <div class="field"><label>Payroll month</label><input type="text" id="hr-ps-month-label" readonly></div>
+            <div class="field"><label>Base salary (₹)</label><input type="number" id="hr-ps-base" min="0" step="100" required></div>
+            <div class="field"><label>Incentive / bonus (₹)</label><input type="number" id="hr-ps-incentive" min="0" step="100" value="0"></div>
+            <div class="field"><label>Allowance (₹)</label><input type="number" id="hr-ps-allowance" min="0" step="100" value="0"></div>
+            <div class="field"><label>Deductions (₹)</label><input type="number" id="hr-ps-deduction" min="0" step="100" value="0"></div>
+            <div class="field"><label>Working days</label><input type="number" id="hr-ps-working-days" min="0" max="31"></div>
+            <div class="field"><label>Paid days</label><input type="number" id="hr-ps-paid-days" min="0" max="31"></div>
+            <div class="field"><label>LOP days</label><input type="number" id="hr-ps-lop-days" min="0" max="31" value="0"></div>
+            <div class="field"><label>Performance score</label><input type="number" id="hr-ps-score" min="0" max="100"></div>
+          </div>
+          <div class="field" style="margin-top:12px;"><label>Notes (optional)</label><textarea id="hr-ps-notes" rows="2" placeholder="Any remarks for this payslip..."></textarea></div>
+          <div class="payslip-net-preview" id="hr-ps-net-preview">Net pay: ₹0</div>
+          <div class="payslip-modal-foot">
+            <button type="button" class="btn btn-ghost" onclick="closeHRPayslipForm()">Cancel</button>
+            <button type="submit" class="btn btn-primary" name="action" value="draft">Save draft</button>
+            <button type="submit" class="btn btn-accent" name="action" value="publish">Save & publish</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="payslip-modal-overlay" id="payslip-modal" style="display:none;" onclick="if(event.target===this)closePayslipModal()">
+      <div class="payslip-modal">
+        <div class="payslip-modal-head">
+          <div>
+            <div class="eyebrow">Salary slip</div>
+            <h3 id="payslip-modal-title">Payslip details</h3>
+          </div>
+          <button type="button" class="modal-close" onclick="closePayslipModal()">×</button>
+        </div>
+        <div id="payslip-modal-body"></div>
+        <div class="payslip-modal-foot" id="payslip-modal-foot"></div>
+      </div>
+    </div>

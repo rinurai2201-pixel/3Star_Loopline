@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — Loopline Agency Ops</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css?v=7">
+</head>
+<body class="login-body">
+<div id="login-screen">
+  <aside class="login-hero">
+    <div class="login-hero-bg"></div>
+    <div class="login-hero-grid"></div>
+    <div class="login-hero-orb login-hero-orb-1"></div>
+    <div class="login-hero-orb login-hero-orb-2"></div>
+
+    <div class="login-hero-content">
+      <div class="login-hero-brand">
+        <div class="brand-mark brand-mark-lg">L</div>
+        <div>
+          <h1>Loopline</h1>
+          <p class="login-hero-tag">Agency Operations Platform</p>
+        </div>
+      </div>
+
+      <p class="login-hero-lead">Run your entire agency from one place — people, projects, payroll, and profit.</p>
+
+      <div class="login-hero-stats">
+        <div class="hero-stat"><span class="hero-stat-val">7</span><span class="hero-stat-lbl">Role types</span></div>
+        <div class="hero-stat"><span class="hero-stat-val">Live</span><span class="hero-stat-lbl">Status board</span></div>
+        <div class="hero-stat"><span class="hero-stat-val">P&amp;L</span><span class="hero-stat-lbl">Revenue tracking</span></div>
+      </div>
+
+      <div class="login-feature-cards">
+        <div class="feat-card"><span class="feat-card-icon">🕒</span><strong>Attendance</strong><span>Clock-in, breaks &amp; leave approvals</span></div>
+        <div class="feat-card"><span class="feat-card-icon">📋</span><strong>Task management</strong><span>TL assigns, team delivers</span></div>
+        <div class="feat-card"><span class="feat-card-icon">💰</span><strong>Revenue &amp; payroll</strong><span>Billing, expenses &amp; profit</span></div>
+        <div class="feat-card"><span class="feat-card-icon">💬</span><strong>Team messaging</strong><span>Direct one-to-one chat</span></div>
+      </div>
+
+      <div class="login-hero-flow">
+        <span class="flow-step">HR adds team</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">Manager assigns</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">TL runs ops</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-step">CEO scales</span>
+      </div>
+
+      <p class="login-hero-foot">&copy; 2026 Loopline · Built for agency ops teams</p>
+    </div>
+  </aside>
+
+  <main class="login-panel">
+    <div class="login-panel-pattern"></div>
+    <div class="login-panel-inner">
+      <div class="login-mobile-brand">
+        <div class="brand-mark">L</div>
+        <span>Loopline</span>
+      </div>
+
+      <div class="login-card">
+        <div class="login-card-accent"></div>
+
+        <header class="login-header">
+          <div class="login-header-icon">👋</div>
+          <div>
+            <h2>Welcome back</h2>
+            <p>Sign in to your workspace</p>
+          </div>
+        </header>
+
+        <form class="login-form" id="login-form" onsubmit="event.preventDefault(); doLogin();">
+          <div class="field login-field">
+            <label for="login-email">Work email</label>
+            <div class="input-wrap">
+              <span class="input-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>
+              </span>
+              <input id="login-email" type="email" placeholder="you@company.com" autocomplete="username" autofocus>
+            </div>
+          </div>
+
+          <div class="field login-field">
+            <label for="login-password">Password</label>
+            <div class="input-wrap">
+              <span class="input-icon" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              </span>
+              <input id="login-password" type="password" placeholder="Enter your password" autocomplete="current-password">
+              <button type="button" class="input-toggle" id="login-pass-toggle" aria-label="Show password" onclick="toggleLoginPassword()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div id="login-error" class="login-error" role="alert"></div>
+
+          <button type="submit" class="btn btn-primary btn-block login-submit" id="login-submit-btn">
+            <span class="login-btn-text">Sign in to Loopline</span>
+            <span class="login-btn-spinner" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <div class="login-trust">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Secure company login · Session-based access
+        </div>
+
+        <div class="login-divider"><span>Quick demo access</span></div>
+        <p class="login-demo-hint">Select a role — credentials fill automatically</p>
+
+        <div class="login-role-grid" id="demo-chips">
+          <button type="button" class="role-card role-ceo" data-email="ceo@loopline.com" data-pass="LooplineCEO2026!" data-desc="Reports, revenue &amp; scale">
+            <span class="role-card-icon">👔</span><span class="role-card-name">CEO</span>
+          </button>
+          <button type="button" class="role-card role-partner" data-email="partner@loopline.com" data-pass="Demo2026!" data-desc="Revenue &amp; reports (no add partner)">
+            <span class="role-card-icon">🤝</span><span class="role-card-name">Partner</span>
+          </button>
+          <button type="button" class="role-card role-hr" data-email="hr@loopline.com" data-pass="LooplineHR2026!" data-desc="HR, payroll &amp; leave">
+            <span class="role-card-icon">🧾</span><span class="role-card-name">HR</span>
+          </button>
+          <button type="button" class="role-card role-mgr" data-email="manager@loopline.com" data-pass="Demo2026!" data-desc="Team assignment">
+            <span class="role-card-icon">👥</span><span class="role-card-name">Manager</span>
+          </button>
+          <button type="button" class="role-card role-tl" data-email="tl@loopline.com" data-pass="Demo2026!" data-desc="Tasks &amp; attendance">
+            <span class="role-card-icon">📋</span><span class="role-card-name">Team Lead</span>
+          </button>
+          <button type="button" class="role-card role-emp" data-email="employee@loopline.com" data-pass="Demo2026!" data-desc="Dashboard &amp; payslip">
+            <span class="role-card-icon">🧑‍💼</span><span class="role-card-name">Employee</span>
+          </button>
+          <button type="button" class="role-card role-sales" data-email="sales@loopline.com" data-pass="Demo2026!" data-desc="Sales dashboard">
+            <span class="role-card-icon">📈</span><span class="role-card-name">Sales</span>
+          </button>
+          <button type="button" class="role-card role-free" data-email="freelancer@loopline.com" data-pass="Demo2026!" data-desc="Freelance hub">
+            <span class="role-card-icon">🎨</span><span class="role-card-name">Freelancer</span>
+          </button>
+        </div>
+        <p class="login-role-preview" id="login-role-preview">Pick a role above to preview access</p>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="/js/config.js?v=6"></script>
+<script src="/js/api.js?v=6"></script>
+<script src="/js/utils.js?v=6"></script>
+<script src="/js/login.js?v=6"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<div class="page-head">
+  <div>
+    <div class="eyebrow">Work</div>
+    <h2>My Tasks</h2>
+    <p>View tasks assigned to you, add your own, and track progress.</p>
+  </div>
+  <button type="button" class="btn btn-accent" onclick="openMyTaskModal()">➕ Add task for myself</button>
+</div>
+<div class="card my-tasks-card">
+  <div class="section-title">Assigned to me</div>
+  <div class="table-scroll">
+    <table class="task-table">
+      <thead><tr><th>Task</th><th>Assigned by</th><th>Deadline</th><th>Status</th><th>Progress</th><th>Update status</th></tr></thead>
+      <tbody id="my-tasks-page-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="payslip-modal-overlay" id="my-task-modal" style="display:none;" onclick="if(event.target===this)closeMyTaskModal()">
+  <div class="payslip-modal">
+    <div class="payslip-modal-head">
+      <div>
+        <div class="eyebrow">Self assign</div>
+        <h3>Add a task for myself</h3>
+      </div>
+      <button type="button" class="modal-close" onclick="closeMyTaskModal()" aria-label="Close">×</button>
+    </div>
+    <div id="my-task-form" style="padding:16px 22px 0;">
+      <div class="field">
+        <label>Task title</label>
+        <input type="text" id="my-task-title" placeholder="e.g. Finish client report">
+      </div>
+      <div class="inline-form">
+        <div class="field"><label>Start date</label><input type="date" id="my-task-start-date"></div>
+        <div class="field"><label>Start time</label><input type="time" id="my-task-start-time"></div>
+      </div>
+      <div class="inline-form">
+        <div class="field"><label>Deadline date</label><input type="date" id="my-task-end-date"></div>
+        <div class="field"><label>Deadline time</label><input type="time" id="my-task-end-time"></div>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea id="my-task-desc" rows="3" placeholder="What needs to be done"></textarea>
+      </div>
+      <div id="my-task-add-error" style="color:var(--danger);font-size:12.5px;margin-bottom:8px;"></div>
+    </div>
+    <div class="payslip-modal-foot">
+      <button type="button" class="btn btn-ghost" onclick="closeMyTaskModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" id="my-task-add-btn" onclick="createMyTask()">Add task</button>
+    </div>
+  </div>
+</div>

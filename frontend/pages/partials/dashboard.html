@@ -1,0 +1,59 @@
+<div class="page-head">
+      <div><div class="eyebrow">Self-service</div><h2 id="dash-hello">Dashboard</h2><p>Clock in, manage your tasks, apply for leave, and check your pay.</p></div>
+    </div>
+    <div id="birthday-banner" style="display:none;background:var(--accent);color:var(--accent-ink);padding:12px 16px;border-radius:10px;font-weight:700;margin-bottom:16px;"></div>
+    <div class="att-hero">
+      <div class="att-hero-main">
+        <div class="att-hero-clockicon"><span class="dot" id="clock-dot"></span></div>
+        <div>
+          <div class="att-hero-label">Attendance today</div>
+          <div class="att-hero-status" id="clock-status-text">Not clocked in</div>
+          <div class="att-hero-sub" id="break-sub">No breaks yet today</div>
+        </div>
+      </div>
+      <div class="att-hero-actions">
+        <button class="btn btn-accent" id="clock-btn" onclick="toggleClock()">Clock In</button>
+        <div class="break-btn-row">
+          <button class="break-btn" id="tea-break-btn" onclick="toggleBreak('Tea')" disabled><span class="bicon">🍵</span> Tea Break</button>
+          <button class="break-btn" id="food-break-btn" onclick="toggleBreak('Food')" disabled><span class="bicon">🍱</span> Food Break</button>
+        </div>
+      </div>
+    </div>
+    <div class="week-strip" id="week-strip"></div>
+    <div class="grid grid-4 dash-quick-grid">
+      <a href="/pages/employee/tasks.html" class="card quick-link-card">
+        <div class="quick-link-icon">✅</div>
+        <div class="quick-link-title">My Tasks</div>
+        <div class="quick-link-desc">View & update assigned work</div>
+      </a>
+      <a href="/pages/employee/attendance.html" class="card quick-link-card">
+        <div class="quick-link-icon">🕒</div>
+        <div class="quick-link-title">My Attendance</div>
+        <div class="quick-link-desc">Clock in/out & view weekly status</div>
+      </a>
+      <a href="/pages/employee/leaves.html" class="card quick-link-card">
+        <div class="quick-link-icon">🏖</div>
+        <div class="quick-link-title">My Leave</div>
+        <div class="quick-link-desc">Apply for leave & check balance</div>
+      </a>
+      <a href="/pages/employee/salary.html" class="card quick-link-card">
+        <div class="quick-link-icon">💰</div>
+        <div class="quick-link-title">My Salary</div>
+        <div class="quick-link-desc">View pay & download payslip</div>
+      </a>
+      <div class="card birthday-widget-card">
+        <div class="quick-link-icon">🎂</div>
+        <div class="quick-link-title">Team birthdays</div>
+        <div class="quick-link-desc">Celebrations this month</div>
+        <div id="dash-birthdays" class="birthday-widget-list"></div>
+      </div>
+    </div>
+    <div class="card complaint-box-card">
+      <div class="section-title">Suggestion / complaint box <span class="complaint-hint">goes straight to HR & CEO</span></div>
+      <p class="complaint-lead">Share feedback, ideas, or issues privately with HR and leadership.</p>
+      <textarea id="complaint-input" class="complaint-input" rows="5" placeholder="Describe your suggestion or complaint in detail..."></textarea>
+      <div class="complaint-actions">
+        <button class="btn btn-primary" onclick="submitComplaint()">Send to HR & CEO</button>
+      </div>
+      <div id="my-complaints" class="complaint-history"></div>
+    </div>

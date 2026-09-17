@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Loopline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css?v=7">
+</head>
+<body>
+<script>window.LOOPLINE_APP_SHELL = true;</script>
+<div id="app">
+  <aside id="sidebar"></aside>
+  <main id="main-content"></main>
+</div>
+
+<div class="payslip-modal-overlay" id="change-password-modal" style="display:none;" onclick="if(event.target===this)closeChangePasswordModal()">
+  <div class="payslip-modal">
+    <div class="payslip-modal-head">
+      <div>
+        <div class="eyebrow">Account</div>
+        <h3>Change password</h3>
+      </div>
+      <button type="button" class="modal-close" onclick="closeChangePasswordModal()" aria-label="Close">×</button>
+    </div>
+    <div style="padding:16px 22px 0;">
+      <div class="field">
+        <label>Current password</label>
+        <input type="password" id="cp-current" autocomplete="current-password" placeholder="Enter current password">
+      </div>
+      <div class="field">
+        <label>New password</label>
+        <input type="password" id="cp-new" autocomplete="new-password" placeholder="At least 6 characters">
+      </div>
+      <div class="field">
+        <label>Confirm new password</label>
+        <input type="password" id="cp-confirm" autocomplete="new-password" placeholder="Re-enter new password">
+      </div>
+      <div id="cp-error" style="color:var(--danger);font-size:12.5px;margin-bottom:8px;"></div>
+    </div>
+    <div class="payslip-modal-foot">
+      <button type="button" class="btn btn-ghost" onclick="closeChangePasswordModal()">Cancel</button>
+      <button type="button" class="btn btn-accent" id="cp-save-btn" onclick="submitChangePassword()">Update password</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/js/config.js?v=14"></script>
+<script src="/js/api.js?v=14"></script>
+<script src="/js/utils.js?v=14"></script>
+<script src="/js/layout.js?v=17"></script>
+<script src="/js/router.js?v=15"></script>
+<script src="/js/app.js?v=20"></script>
+</body>
+</html>
